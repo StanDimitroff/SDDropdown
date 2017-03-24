@@ -12,6 +12,14 @@ public class SDDropdown: UIView {
 
     private let defaultDimColor = UIColor.black.withAlphaComponent(0.5).cgColor
 
+    fileprivate var presenter: UIViewController?
+    fileprivate var rowHeight: CGFloat?
+    fileprivate var multiselect: Bool = false
+    fileprivate var targetView: UIView!
+    fileprivate var selectedData: [String] = []
+    fileprivate var tapGesture: UITapGestureRecognizer?
+    fileprivate var tableView: UITableView!
+
     public var collection: Any! {
         didSet {
             if let sections = collection as? [String: AnyObject] {
@@ -26,18 +34,12 @@ public class SDDropdown: UIView {
 
     public var selectionIndexPath: IndexPath?
 
-    fileprivate var presenter: UIViewController?
-    fileprivate var rowHeight: CGFloat?
-    fileprivate var multiselect: Bool = false
-    fileprivate var cellClass: AnyClass?
-    fileprivate var targetView: UIView!
-    fileprivate var selectedData: [String] = []
-    fileprivate var tapGesture: UITapGestureRecognizer?
+
 
     public var onSelect: ((String, IndexPath?, IndexPath) -> ())?
     public var onMultiSelect: (([String], IndexPath?) -> ())?
 
-    fileprivate var tableView: UITableView!
+
 
     fileprivate var sections: [String: AnyObject] = [:] {
         didSet {
@@ -66,16 +68,24 @@ public class SDDropdown: UIView {
         super.init(coder: aDecoder)
     }
 
-    public init(collection: Any, targetView: UIView, presenter: UIViewController? = nil, cellClass: AnyClass? = nil, multiselect: Bool? = nil, rowHeight: CGFloat? = nil, selectionIndexPath: IndexPath? = nil) {
+    public init(collection: Any,
+                targetView: UIView,
+                presenter: UIViewController? = nil,
+                multiselect: Bool? = nil,
+                rowHeight: CGFloat? = nil,
+                selectionIndexPath: IndexPath? = nil) {
 
         self.targetView         = targetView
         self.presenter          = presenter ?? UIApplication.shared.keyWindow?.rootViewController
-        self.cellClass          = cellClass
         self.multiselect        = multiselect ?? false
         self.rowHeight          = rowHeight
         self.selectionIndexPath = selectionIndexPath
 
-        super.init(frame: CGRect(x: presenter!.view.frame.origin.x + 10, y: targetView.frame.maxY + 10, width: presenter!.view.frame.width - 20, height: 300))
+        let viewFrame: CGRect = CGRect(x: presenter!.view.frame.origin.x + 10,
+                                       y: targetView.frame.maxY + 10,
+                                       width: presenter!.view.frame.width - 20,
+                                       height: 300)
+        super.init(frame: viewFrame)
 
         self.layer.cornerRadius = 15
         self.layer.masksToBounds = true
@@ -92,9 +102,15 @@ public class SDDropdown: UIView {
         var tableView = UITableView(frame: frame, style: .plain)
         tableView.allowsMultipleSelection = multiselect ?? false
         if multiselect {
-            let headerView = UIView(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: 40))
+            let headerView = UIView(frame: CGRect(x: 0,
+                                                  y: 0,
+                                                  width: self.frame.width,
+                                                  height: 40))
 
-            let doneButton: UIButton = UIButton(frame: CGRect(x: 0, y: 0, width: headerView.frame.width - 10, height: headerView.frame.height - 10))
+            let doneButton: UIButton = UIButton(frame: CGRect(x: 0,
+                                                              y: 0,
+                                                              width: headerView.frame.width - 10,
+                                                              height: headerView.frame.height - 10))
             doneButton.setTitle("Done", for: .normal)
             doneButton.backgroundColor = .purple
             doneButton.layer.cornerRadius = 8
@@ -158,8 +174,12 @@ public class SDDropdown: UIView {
 
         let views = ["overlayView": overlayView]
 
-        self.presenter?.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[overlayView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        self.presenter?.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[overlayView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        self.presenter?.view.addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: "V:|[overlayView]|",
+            options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+        self.presenter?.view.addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: "H:|[overlayView]|",
+            options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
 
         tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         overlayView.addGestureRecognizer(tapGesture!)
@@ -170,12 +190,14 @@ public class SDDropdown: UIView {
         overlayView.removeFromSuperview()
     }
 
-    @objc private func done() {
+    @objc
+    private func done() {
         dismiss()
         onMultiSelect?(selectedData, selectionIndexPath)
     }
 
-    @objc fileprivate func dismiss() {
+    @objc
+    fileprivate func dismiss() {
         removeFromSuperview()
         removeOverlay()
     }
@@ -212,7 +234,8 @@ extension SDDropdown: UITableViewDataSource {
         return sections.isEmpty ? 1 : sections.keys.count
     }
 
-    public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    public func tableView(_ tableView: UITableView,
+                          titleForHeaderInSection section: Int) -> String? {
         if !sections.isEmpty {
             return Array(sections.keys)[section]
         }
@@ -228,7 +251,8 @@ extension SDDropdown: UITableViewDataSource {
         return filteredRows.count
     }
 
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView,
+                          cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var item: String = ""
 
         if !sections.isEmpty {
@@ -248,7 +272,8 @@ extension SDDropdown: UITableViewDataSource {
 
 // MARK: UITableViewDelegate
 extension SDDropdown: UITableViewDelegate {
-    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    public func tableView(_ tableView: UITableView,
+                          heightForRowAt indexPath: IndexPath) -> CGFloat {
         return rowHeight ?? 50
     }
 
