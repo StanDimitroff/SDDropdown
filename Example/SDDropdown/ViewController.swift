@@ -16,10 +16,10 @@ class ViewController: UIViewController {
 
     var searchD: SDDropdown!
 
-    let c = ["Test", "Mest"]
+    let rows = ["Test", "Mest", "Rest"]
 
     let dict: [String: [String]] = [
-        "First section": ["One", "Two"], "Second section": ["One", "Two"]
+        "First section": ["One", "Two"], "Second section": ["First", "Second"]
     ]
 
     override func viewDidLoad() {

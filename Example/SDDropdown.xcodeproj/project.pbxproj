@@ -41,10 +41,10 @@
 		607FACE51AFB9204008FA782 /* SDDropdown_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SDDropdown_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
-		6708254CA9D6E91C6FB5E662 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		6708254CA9D6E91C6FB5E662 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		913BA8B921A749E00BF67A4A /* Pods-SDDropdown_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDDropdown_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SDDropdown_Example/Pods-SDDropdown_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		9D2C54A11CF0982BAF5AE79E /* SDDropdown.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = SDDropdown.podspec; path = ../SDDropdown.podspec; sourceTree = "<group>"; };
-		B3BDDFD27E9185AB49B5FA80 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		9D2C54A11CF0982BAF5AE79E /* SDDropdown.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SDDropdown.podspec; path = ../SDDropdown.podspec; sourceTree = "<group>"; };
+		B3BDDFD27E9185AB49B5FA80 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		C0870A0D840446F8EB15100D /* Pods-SDDropdown_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDDropdown_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SDDropdown_Tests/Pods-SDDropdown_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		EBD0079A3BDBB95C7D7FEC82 /* Pods-SDDropdown_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDDropdown_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SDDropdown_Tests/Pods-SDDropdown_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -215,10 +215,12 @@
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = NXZW7962A8;
 						LastSwiftMigration = 0820;
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = NXZW7962A8;
 						LastSwiftMigration = 0820;
 						TestTargetID = 607FACCF1AFB9204008FA782;
 					};
@@ -496,10 +498,12 @@
 			baseConfigurationReference = 913BA8B921A749E00BF67A4A /* Pods-SDDropdown_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = NXZW7962A8;
 				INFOPLIST_FILE = SDDropdown/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.getset.SDDropdown;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -510,10 +514,12 @@
 			baseConfigurationReference = 2AAE69D5503B8D9229041404 /* Pods-SDDropdown_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = NXZW7962A8;
 				INFOPLIST_FILE = SDDropdown/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.getset.SDDropdown;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -523,6 +529,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EBD0079A3BDBB95C7D7FEC82 /* Pods-SDDropdown_Tests.debug.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = NXZW7962A8;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -543,6 +550,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C0870A0D840446F8EB15100D /* Pods-SDDropdown_Tests.release.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = NXZW7962A8;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

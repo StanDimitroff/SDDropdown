@@ -2,8 +2,8 @@
 //  SDDropdown.swift
 //  Pods
 //
-//  Created by Stanislav Dimitrov on 3/16/17.
-//
+//  Created by StanDimitroff on 03/16/2017.
+//  Copyright (c) 2017 StanDimitroff. All rights reserved.
 //
 
 import UIKit
@@ -11,7 +11,9 @@ import UIKit
 public class SDDropdown: UIView {
 
     private let defaultDimColor = UIColor.black.withAlphaComponent(0.5).cgColor
+    private lazy var overlayView: UIView = self.makeOverlay()
 
+    fileprivate let notificationCenter = NotificationCenter.default
     fileprivate var presenter: UIViewController?
     fileprivate var rowHeight: CGFloat?
     fileprivate var multiselect: Bool = false
@@ -19,27 +21,6 @@ public class SDDropdown: UIView {
     fileprivate var selectedData: [String] = []
     fileprivate var tapGesture: UITapGestureRecognizer?
     fileprivate var tableView: UITableView!
-
-    public var collection: Any! {
-        didSet {
-            if let sections = collection as? [String: AnyObject] {
-                self.sections = sections
-            } else if let rows = collection as? [String] {
-                self.rows = rows
-            }
-
-            setupTableView()
-        }
-    }
-
-    public var selectionIndexPath: IndexPath?
-
-
-
-    public var onSelect: ((String, IndexPath?, IndexPath) -> ())?
-    public var onMultiSelect: (([String], IndexPath?) -> ())?
-
-
 
     fileprivate var sections: [String: AnyObject] = [:] {
         didSet {
@@ -62,9 +43,24 @@ public class SDDropdown: UIView {
 
     fileprivate var filteredRows: [String] = []
 
-    lazy var overlayView: UIView = self.makeOverlay()
+    public var collection: Any! {
+        didSet {
+            if let sections = collection as? [String: AnyObject] {
+                self.sections = sections
+            } else if let rows = collection as? [String] {
+                self.rows = rows
+            }
 
-    required public init?(coder aDecoder: NSCoder) {
+            setupTableView()
+        }
+    }
+
+    public var selectionIndexPath: IndexPath?
+
+    public var onSelect: ((String, IndexPath?, IndexPath) -> ())?
+    public var onMultiSelect: (([String], IndexPath?) -> ())?
+
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 
@@ -132,10 +128,32 @@ public class SDDropdown: UIView {
 
         self.addSubview(tableView)
 
+        addKeyboardObservers()
+
         if let presenter = self.presenter {
             setupOverlay()
             presenter.view.addSubview(self)
         }
+    }
+
+    private func addKeyboardObservers() {
+        notificationCenter.addObserver(self,
+                                       selector: #selector(keyboardDidShow(_:)),
+                                       name: NSNotification.Name.UIKeyboardDidShow,
+                                       object: nil)
+        notificationCenter.addObserver(self,
+                                       selector: #selector(keyboardDidHide(_:)),
+                                       name: NSNotification.Name.UIKeyboardDidHide,
+                                       object: nil)
+    }
+
+    private func removeKeyboardObservers() {
+        notificationCenter.removeObserver(self,
+                                          name: NSNotification.Name.UIKeyboardDidShow,
+                                          object: nil)
+        notificationCenter.removeObserver(self,
+                                          name: NSNotification.Name.UIKeyboardDidHide,
+                                          object: nil)
     }
 
     fileprivate func makeOverlay() -> UIView {
@@ -190,6 +208,16 @@ public class SDDropdown: UIView {
         overlayView.removeFromSuperview()
     }
 
+    func keyboardDidShow(_ notification: Notification) {
+        self.setNeedsUpdateConstraints()
+        // TODO: resize view frame here
+    }
+
+    func keyboardDidHide(_ notification: Notification) {
+        self.setNeedsUpdateConstraints()
+        // TODO: resize view frame here
+    }
+
     @objc
     private func done() {
         dismiss()
@@ -200,6 +228,14 @@ public class SDDropdown: UIView {
     fileprivate func dismiss() {
         removeFromSuperview()
         removeOverlay()
+    }
+
+    public func show() {
+
+    }
+
+    public func hide() {
+        dismiss()
     }
 
     public func filter(_ term: String) {
@@ -225,6 +261,10 @@ public class SDDropdown: UIView {
         }
 
         tableView.reloadData()
+    }
+
+    deinit {
+        removeKeyboardObservers()
     }
 }
 
@@ -256,8 +296,9 @@ extension SDDropdown: UITableViewDataSource {
         var item: String = ""
 
         if !sections.isEmpty {
-            let values = Array(filteredSections.values)[indexPath.section] as! [String]
-            item = values[indexPath.row]
+            if let values = Array(filteredSections.values)[indexPath.section] as? [String] {
+                item = values[indexPath.row]
+            }
         } else {
             item = filteredRows[indexPath.row]
         }
@@ -299,6 +340,10 @@ extension SDDropdown: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
         cell?.accessoryType = .none
+    }
+
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // TODO: resize view frame here
     }
 }
 
