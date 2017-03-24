@@ -1,0 +1,22 @@
+PODS:
+  - Nimble (5.1.1)
+  - Quick (1.0.0)
+  - SDDropdown (0.1.0)
+
+DEPENDENCIES:
+  - Nimble (~> 5.1.1)
+  - Quick (~> 1.0.0)
+  - SDDropdown (from `../`)
+
+EXTERNAL SOURCES:
+  SDDropdown:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Nimble: 415e3aa3267e7bc2c96b05fa814ddea7bb686a29
+  Quick: 8024e4a47e6cc03a9d5245ef0948264fc6d27cff
+  SDDropdown: 4331bc1c0c15a1682b608e35f8215d33b3017e57
+
+PODFILE CHECKSUM: fe9d469e40a7570911ae8bca907c729574fe5e6f
+
+COCOAPODS: 1.2.0

@@ -1,0 +1,22 @@
+{
+  "name": "SDDropdown",
+  "version": "0.1.0",
+  "summary": "A short description of SDDropdown.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/StanDimitroff/SDDropdown",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "StanDimitroff": "standimitroff@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/StanDimitroff/SDDropdown.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "SDDropdown/Classes/**/*"
+}
