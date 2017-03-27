@@ -1,6 +1,6 @@
 //
 //  SDDropdown.swift
-//  Pods
+//  SDDropdown
 //
 //  Created by StanDimitroff on 03/16/2017.
 //  Copyright (c) 2017 StanDimitroff. All rights reserved.
@@ -8,7 +8,9 @@
 
 import UIKit
 
-public class SDDropdown: UIView {
+private let cellReuseIdentifier: String = "dropdownCell"
+
+public final class SDDropdown: UIView {
 
     private let defaultDimColor = UIColor.black.withAlphaComponent(0.5).cgColor
     private lazy var overlayView: UIView = self.makeOverlay()
@@ -20,11 +22,10 @@ public class SDDropdown: UIView {
     fileprivate var targetView: UIView!
     fileprivate var selectedData: [String] = []
     fileprivate var tapGesture: UITapGestureRecognizer?
-    fileprivate var tableView: UITableView!
+    fileprivate var tableView: UITableView = UITableView()
 
     fileprivate var sections: [String: AnyObject] = [:] {
         didSet {
-
             filteredSections = sections
         }
     }
@@ -56,6 +57,13 @@ public class SDDropdown: UIView {
     }
 
     public var selectionIndexPath: IndexPath?
+    private var cellNib: UINib!
+
+    public var configureCustomCell: ((Int, String, SDDropdownCell) -> ())? {
+        didSet {
+            reloadTable()
+        }
+    }
 
     public var onSelect: ((String, IndexPath?, IndexPath) -> ())?
     public var onMultiSelect: (([String], IndexPath?) -> ())?
@@ -69,13 +77,15 @@ public class SDDropdown: UIView {
                 presenter: UIViewController? = nil,
                 multiselect: Bool? = nil,
                 rowHeight: CGFloat? = nil,
-                selectionIndexPath: IndexPath? = nil) {
+                selectionIndexPath: IndexPath? = nil,
+                cellNib: UINib) {
 
         self.targetView         = targetView
         self.presenter          = presenter ?? UIApplication.shared.keyWindow?.rootViewController
         self.multiselect        = multiselect ?? false
         self.rowHeight          = rowHeight
         self.selectionIndexPath = selectionIndexPath
+        self.cellNib            = cellNib
 
         let viewFrame: CGRect = CGRect(x: presenter!.view.frame.origin.x + 10,
                                        y: targetView.frame.maxY + 10,
@@ -86,6 +96,8 @@ public class SDDropdown: UIView {
         self.layer.cornerRadius = 10
         self.layer.masksToBounds = true
 
+        addKeyboardObservers()
+
         setCollection(collection)
     }
 
@@ -95,8 +107,11 @@ public class SDDropdown: UIView {
 
     private func setupTableView() {
         let frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
-        var tableView = UITableView(frame: frame, style: .plain)
+        tableView = UITableView(frame: frame, style: .plain)
         tableView.allowsMultipleSelection = multiselect ?? false
+
+        tableView.register(cellNib, forCellReuseIdentifier: cellReuseIdentifier)
+        
         if multiselect {
             let headerView = UIView(frame: CGRect(x: 0,
                                                   y: 0,
@@ -120,30 +135,12 @@ public class SDDropdown: UIView {
 
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "dropdownCell")
         tableView.dataSource = self
         tableView.delegate = self
 
-        self.tableView = tableView
-
         self.addSubview(tableView)
-
-        addKeyboardObservers()
-
-        if let presenter = self.presenter {
-            setupOverlay()
-
-            UIView.animate(withDuration: 0.2, animations: {
-                self.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-            }, completion: { finished in
-                UIView.animate(withDuration: 0.2) {
-                    self.transform = CGAffineTransform.identity
-                     presenter.view.addSubview(self)
-                }
-            })
-        }
     }
-
+    
     private func addKeyboardObservers() {
         notificationCenter.addObserver(self,
                                        selector: #selector(keyboardDidShow(_:)),
@@ -222,16 +219,19 @@ public class SDDropdown: UIView {
         return (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.size.height
     }
 
+    fileprivate func hideKeyboard() {
+        presenter?.view.endEditing(true)
+    }
+
+    fileprivate func reloadTable() {
+        tableView.reloadData()
+    }
+
     @objc
     private func keyboardDidShow(_ notification: Notification) {
-        //self.setNeedsUpdateConstraints()
-
-        let keyboardHeight = self.keyboardHeight(notification)
-        let frame = self.frame
-        let height =  keyboardHeight - self.frame.height
-        //self.frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: frame.height - height)
-
         // TODO: resize view frame here
+
+        self.updateConstraints()
     }
 
     @objc
@@ -250,17 +250,29 @@ public class SDDropdown: UIView {
     fileprivate func dismiss() {
         UIView.animate(withDuration: 0.2, animations: {
             self.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+            self.frame.origin.y = self.targetView.frame.maxY + 10
         }, completion: { finished in
             UIView.animate(withDuration: 0.2) {
                 self.removeFromSuperview()
                 self.removeOverlay()
-                self.presenter!.view.endEditing(true)
+                self.hideKeyboard()
             }
         })
     }
 
     public func show() {
+        if let presenter = self.presenter {
+            setupOverlay()
 
+            UIView.animate(withDuration: 0.2, animations: {
+                self.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+            }, completion: { finished in
+                UIView.animate(withDuration: 0.2) {
+                    self.transform = CGAffineTransform.identity
+                    presenter.view.addSubview(self)
+                }
+            })
+        }
     }
 
     public func hide() {
@@ -322,19 +334,21 @@ extension SDDropdown: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView,
                           cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var item: String = ""
+        var value: String = ""
 
         if !sections.isEmpty {
             if let values = Array(filteredSections.values)[indexPath.section] as? [String] {
-                item = values[indexPath.row]
+                value = values[indexPath.row]
             }
         } else {
-            item = filteredRows[indexPath.row]
+            value = filteredRows[indexPath.row]
         }
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "dropdownCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier,
+                                                 for: indexPath) as! SDDropdownCell
         cell.selectionStyle = .none
-        cell.textLabel?.text = item
+
+        configureCustomCell?(indexPath.row, value, cell)
 
         return cell
     }
@@ -373,7 +387,7 @@ extension SDDropdown: UITableViewDelegate {
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         // TODO: resize view frame here
-        presenter?.view.endEditing(true)
+        hideKeyboard()
     }
 }
 

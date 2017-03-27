@@ -30,9 +30,16 @@ class ViewController: UIViewController {
     }
 
     func test() {
-        let dropdown = SDDropdown(collection: dict, targetView: textField, presenter: self, multiselect: true)
+        let dropdown = SDDropdown(collection: dict, targetView: textField, presenter: self, multiselect: true, cellNib: UINib(nibName: "CustomCell", bundle: nil))
+
+        dropdown.configureCustomCell = { ip, value, cell in
+            guard let cell = cell as? CustomCell else { return }
+
+            cell.valueLabel.text = value
+        }
+
+        dropdown.show()
         searchD = dropdown
-        
     }
 
     func textFieldDidChange(_ textField: UITextField) {
@@ -40,10 +47,19 @@ class ViewController: UIViewController {
     }
 
     @IBAction func showDropdown(_ sender: UIButton) {
-        let dropdown = SDDropdown(collection: dict, targetView: button, presenter: self, multiselect: true)
+        let dropdown = SDDropdown(collection: rows, targetView: button, presenter: self, multiselect: false, cellNib: UINib(nibName: "CustomCell", bundle: nil))
 
-        dropdown.onSelect = { val, _, ip in
-            print(val)
+        dropdown.configureCustomCell = { ip, value, cell in
+            guard let cell = cell as? CustomCell else { return }
+
+            cell.valueLabel.text = value
+
+        }
+
+        dropdown.show()
+
+        dropdown.onSelect = { value, _, ip in
+            print(value)
             print(ip.row)
         }
     }
