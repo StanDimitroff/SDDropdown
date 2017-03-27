@@ -83,7 +83,7 @@ public class SDDropdown: UIView {
                                        height: 300)
         super.init(frame: viewFrame)
 
-        self.layer.cornerRadius = 15
+        self.layer.cornerRadius = 10
         self.layer.masksToBounds = true
 
         setCollection(collection)
@@ -109,7 +109,7 @@ public class SDDropdown: UIView {
                                                               height: headerView.frame.height - 10))
             doneButton.setTitle("Done", for: .normal)
             doneButton.backgroundColor = .purple
-            doneButton.layer.cornerRadius = 8
+            doneButton.layer.cornerRadius = 10
             doneButton.addTarget(self, action: #selector(done), for: .touchUpInside)
 
             headerView.addSubview(doneButton)
@@ -132,7 +132,15 @@ public class SDDropdown: UIView {
 
         if let presenter = self.presenter {
             setupOverlay()
-            presenter.view.addSubview(self)
+
+            UIView.animate(withDuration: 0.2, animations: {
+                self.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+            }, completion: { finished in
+                UIView.animate(withDuration: 0.2) {
+                    self.transform = CGAffineTransform.identity
+                     presenter.view.addSubview(self)
+                }
+            })
         }
     }
 
@@ -208,12 +216,26 @@ public class SDDropdown: UIView {
         overlayView.removeFromSuperview()
     }
 
-    func keyboardDidShow(_ notification: Notification) {
-        self.setNeedsUpdateConstraints()
+    fileprivate func keyboardHeight(_ notification: Notification) -> CGFloat {
+        let userInfo = notification.userInfo!
+
+        return (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.size.height
+    }
+
+    @objc
+    private func keyboardDidShow(_ notification: Notification) {
+        //self.setNeedsUpdateConstraints()
+
+        let keyboardHeight = self.keyboardHeight(notification)
+        let frame = self.frame
+        let height =  keyboardHeight - self.frame.height
+        //self.frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: frame.height - height)
+
         // TODO: resize view frame here
     }
 
-    func keyboardDidHide(_ notification: Notification) {
+    @objc
+    private func keyboardDidHide(_ notification: Notification) {
         self.setNeedsUpdateConstraints()
         // TODO: resize view frame here
     }
@@ -226,8 +248,15 @@ public class SDDropdown: UIView {
 
     @objc
     fileprivate func dismiss() {
-        removeFromSuperview()
-        removeOverlay()
+        UIView.animate(withDuration: 0.2, animations: {
+            self.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        }, completion: { finished in
+            UIView.animate(withDuration: 0.2) {
+                self.removeFromSuperview()
+                self.removeOverlay()
+                self.presenter!.view.endEditing(true)
+            }
+        })
     }
 
     public func show() {
@@ -344,6 +373,7 @@ extension SDDropdown: UITableViewDelegate {
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         // TODO: resize view frame here
+        presenter?.view.endEditing(true)
     }
 }
 
