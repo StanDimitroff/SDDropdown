@@ -25,16 +25,15 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        textField.addTarget(self, action: #selector(test), for: .touchDown)
+        textField.addTarget(self, action: #selector(textFieldTapped), for: .touchDown)
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
     }
 
-    func test() {
+    func textFieldTapped() {
         let dropdown = SDDropdown(collection: dict, targetView: textField, presenter: self, multiselect: true, cellNib: UINib(nibName: "CustomCell", bundle: nil))
 
-        dropdown.configureCustomCell = { ip, value, cell in
+        dropdown.configureCell = { ip, value, cell in
             guard let cell = cell as? CustomCell else { return }
-
             cell.valueLabel.text = value
         }
 
@@ -49,11 +48,9 @@ class ViewController: UIViewController {
     @IBAction func showDropdown(_ sender: UIButton) {
         let dropdown = SDDropdown(collection: rows, targetView: button, presenter: self, multiselect: false, cellNib: UINib(nibName: "CustomCell", bundle: nil))
 
-        dropdown.configureCustomCell = { ip, value, cell in
+        dropdown.configureCell = { ip, value, cell in
             guard let cell = cell as? CustomCell else { return }
-
             cell.valueLabel.text = value
-
         }
 
         dropdown.show()

@@ -13,7 +13,10 @@ private let cellReuseIdentifier: String = "dropdownCell"
 public final class SDDropdown: UIView {
 
     private let defaultDimColor = UIColor.black.withAlphaComponent(0.5).cgColor
-    private lazy var overlayView: UIView = self.makeOverlay()
+    private let overlayView = UIView()
+    private let tableContainerView = UIView()
+    private var cellNib: UINib!
+    private var kbFrame: CGRect = .zero
 
     fileprivate let notificationCenter = NotificationCenter.default
     fileprivate var presenter: UIViewController?
@@ -51,20 +54,12 @@ public final class SDDropdown: UIView {
             } else if let rows = collection as? [String] {
                 self.rows = rows
             }
-
-            setupTableView()
         }
     }
 
     public var selectionIndexPath: IndexPath?
-    private var cellNib: UINib!
 
-    public var configureCustomCell: ((Int, String, SDDropdownCell) -> ())? {
-        didSet {
-            reloadTable()
-        }
-    }
-
+    public var configureCell: ((Int, String, SDDropdownCell) -> ())?
     public var onSelect: ((String, IndexPath?, IndexPath) -> ())?
     public var onMultiSelect: (([String], IndexPath?) -> ())?
 
@@ -87,16 +82,11 @@ public final class SDDropdown: UIView {
         self.selectionIndexPath = selectionIndexPath
         self.cellNib            = cellNib
 
-        let viewFrame: CGRect = CGRect(x: presenter!.view.frame.origin.x + 10,
-                                       y: targetView.frame.maxY + 10,
-                                       width: presenter!.view.frame.width - 20,
-                                       height: 300)
+        let viewFrame: CGRect = presenter!.view.frame
         super.init(frame: viewFrame)
 
-        self.layer.cornerRadius = 10
-        self.layer.masksToBounds = true
-
         addKeyboardObservers()
+        registerForOrientationChanges()
 
         setCollection(collection)
     }
@@ -105,18 +95,55 @@ public final class SDDropdown: UIView {
         self.collection = collection
     }
 
+    private func setTableContainerView() {
+        tableContainerView.frame = CGRect(x: self.frame.origin.x + 10,
+                                              y: targetView.frame.maxY + 8,
+                                              width: self.frame.width - 20,
+                                              height: 0)
+
+        tableContainerView.layer.cornerRadius = 10
+        tableContainerView.layer.masksToBounds = true
+
+        addSubview(tableContainerView)
+
+        setupTableView()
+    }
+
+    private func adjustDropdownHeight() {
+        var newHeight: CGFloat = tableView.contentSize.height
+        UIView.animate(withDuration: 0.2, animations: {
+            self.tableContainerView.frame.size.height = newHeight
+        })
+        
+        setNeedsUpdateConstraints()
+
+        if kbFrame != .zero {
+            let tableContainerMaxY = tableContainerView.frame.maxY
+            let keyboardY = kbFrame.origin.y
+
+            if tableContainerMaxY > keyboardY {
+                let delta = abs(tableContainerMaxY - keyboardY) + 8
+                 newHeight -= delta
+            }
+        }
+
+        UIView.animate(withDuration: 0.2, animations: {
+            self.tableContainerView.frame.size.height = newHeight
+        })
+    }
+
     private func setupTableView() {
-        let frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
-        tableView = UITableView(frame: frame, style: .plain)
-        tableView.allowsMultipleSelection = multiselect ?? false
+        tableView.frame = tableContainerView.frame
+        tableView.allowsMultipleSelection = multiselect
 
         tableView.register(cellNib, forCellReuseIdentifier: cellReuseIdentifier)
         
         if multiselect {
             let headerView = UIView(frame: CGRect(x: 0,
                                                   y: 0,
-                                                  width: self.frame.width,
+                                                  width: tableContainerView.frame.width,
                                                   height: 40))
+
 
             let doneButton: UIButton = UIButton(frame: CGRect(x: 0,
                                                               y: 0,
@@ -138,7 +165,20 @@ public final class SDDropdown: UIView {
         tableView.dataSource = self
         tableView.delegate = self
 
-        self.addSubview(tableView)
+        tableContainerView.addSubview(tableView)
+
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+
+        tableContainerView.addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: "V:|[tableView]|",
+            options: NSLayoutFormatOptions(rawValue: 0),
+            metrics: nil,
+            views: ["tableView": tableView]))
+        tableContainerView.addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: "H:|[tableView]|",
+            options: NSLayoutFormatOptions(rawValue: 0),
+            metrics: nil,
+            views: ["tableView": tableView]))
     }
     
     private func addKeyboardObservers() {
@@ -161,21 +201,54 @@ public final class SDDropdown: UIView {
                                           object: nil)
     }
 
-    fileprivate func makeOverlay() -> UIView {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
+    private func registerForOrientationChanges() {
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(orientationChanged),
+                                               name: .UIDeviceOrientationDidChange,
+                                               object: nil)
+    }
 
-        return view
+    private func unregisterFromOrientationChanges() {
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.removeObserver(self,
+                                                  name: .UIDeviceOrientationDidChange,
+                                                  object: nil)
+    }
+
+    func orientationChanged() {
+        setNeedsDisplay()
+    }
+    
+    @objc
+    private func keyboardDidShow(_ notification: Notification) {
+        kbFrame = keyboardFrame(notification)
+        adjustDropdownHeight()
+    }
+
+    @objc
+    private func keyboardDidHide(_ notification: Notification) {
+        kbFrame = .zero
+        adjustDropdownHeight()
+    }
+
+    @objc
+    private func done() {
+        dismiss()
+        onMultiSelect?(selectedData, selectionIndexPath)
     }
 
     fileprivate func setupOverlay() {
+        overlayView.frame = self.frame
+        overlayView.translatesAutoresizingMaskIntoConstraints = false
+
         if let overlaySublayers = overlayView.layer.sublayers {
             for layer in overlaySublayers {
                 layer.removeFromSuperlayer()
             }
         }
 
-        let overlayPath = UIBezierPath(rect: self.presenter!.view.bounds)
+        let overlayPath = UIBezierPath(rect: self.bounds)
         overlayPath.usesEvenOddFillRule = true
 
         let convertedFrame = targetView.superview?.convert(targetView.frame, to: overlayView)
@@ -193,19 +266,23 @@ public final class SDDropdown: UIView {
 
         overlayView.layer.addSublayer(fillLayer)
 
-        self.presenter?.view.addSubview(overlayView)
+        addSubview(overlayView)
 
-        let views = ["overlayView": overlayView]
-
-        self.presenter?.view.addConstraints(NSLayoutConstraint.constraints(
+        self.addConstraints(NSLayoutConstraint.constraints(
             withVisualFormat: "V:|[overlayView]|",
-            options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
-        self.presenter?.view.addConstraints(NSLayoutConstraint.constraints(
+            options: NSLayoutFormatOptions(rawValue: 0),
+            metrics: nil,
+            views: ["overlayView": overlayView]))
+        self.addConstraints(NSLayoutConstraint.constraints(
             withVisualFormat: "H:|[overlayView]|",
-            options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views))
+            options: NSLayoutFormatOptions(rawValue: 0),
+            metrics: nil,
+            views: ["overlayView": overlayView]))
 
         tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         overlayView.addGestureRecognizer(tapGesture!)
+
+        setTableContainerView()
     }
 
     fileprivate func removeOverlay() {
@@ -213,10 +290,10 @@ public final class SDDropdown: UIView {
         overlayView.removeFromSuperview()
     }
 
-    fileprivate func keyboardHeight(_ notification: Notification) -> CGFloat {
+    fileprivate func keyboardFrame(_ notification: Notification) -> CGRect {
         let userInfo = notification.userInfo!
 
-        return (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.size.height
+        return (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
     }
 
     fileprivate func hideKeyboard() {
@@ -228,29 +305,9 @@ public final class SDDropdown: UIView {
     }
 
     @objc
-    private func keyboardDidShow(_ notification: Notification) {
-        // TODO: resize view frame here
-
-        self.updateConstraints()
-    }
-
-    @objc
-    private func keyboardDidHide(_ notification: Notification) {
-        self.setNeedsUpdateConstraints()
-        // TODO: resize view frame here
-    }
-
-    @objc
-    private func done() {
-        dismiss()
-        onMultiSelect?(selectedData, selectionIndexPath)
-    }
-
-    @objc
     fileprivate func dismiss() {
         UIView.animate(withDuration: 0.2, animations: {
-            self.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-            self.frame.origin.y = self.targetView.frame.maxY + 10
+            self.tableContainerView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
         }, completion: { finished in
             UIView.animate(withDuration: 0.2) {
                 self.removeFromSuperview()
@@ -260,25 +317,31 @@ public final class SDDropdown: UIView {
         })
     }
 
+    /// Show dropdown with animation
     public func show() {
         if let presenter = self.presenter {
             setupOverlay()
 
             UIView.animate(withDuration: 0.2, animations: {
-                self.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+                self.tableContainerView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
             }, completion: { finished in
                 UIView.animate(withDuration: 0.2) {
-                    self.transform = CGAffineTransform.identity
+                    self.tableContainerView.transform = CGAffineTransform.identity
                     presenter.view.addSubview(self)
+                    self.adjustDropdownHeight()
                 }
             })
         }
     }
 
+    /// Hide dropdown
     public func hide() {
         dismiss()
     }
 
+    /// Filter by term
+    ///
+    /// - Parameter term: the term for filtering
     public func filter(_ term: String) {
         if !term.isEmpty {
             filteredRows.removeAll(keepingCapacity: false)
@@ -302,10 +365,13 @@ public final class SDDropdown: UIView {
         }
 
         tableView.reloadData()
+
+        adjustDropdownHeight()
     }
 
     deinit {
         removeKeyboardObservers()
+        unregisterFromOrientationChanges()
     }
 }
 
@@ -348,7 +414,7 @@ extension SDDropdown: UITableViewDataSource {
                                                  for: indexPath) as! SDDropdownCell
         cell.selectionStyle = .none
 
-        configureCustomCell?(indexPath.row, value, cell)
+        configureCell?(indexPath.row, value, cell)
 
         return cell
     }
@@ -386,7 +452,6 @@ extension SDDropdown: UITableViewDelegate {
     }
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        // TODO: resize view frame here
         hideKeyboard()
     }
 }
