@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -21,35 +20,40 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XTF-5X-JLS">
-                                <rect key="frame" x="164" y="70" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="showDropdown:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="1UR-hs-RA9"/>
-                                </connections>
-                            </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="pr7-Wb-IVK">
-                                <rect key="frame" x="87" y="143" width="200" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="200" id="dzR-9Y-hCc"/>
-                                </constraints>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="8gl-yW-PhV">
+                                <rect key="frame" x="150" y="70" width="75" height="130"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XTF-5X-JLS">
+                                        <rect key="frame" x="0.0" y="0.0" width="75" height="30"/>
+                                        <state key="normal" title="No Search"/>
+                                        <connections>
+                                            <action selector="showDropdown:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="1UR-hs-RA9"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bwh-gq-feK">
+                                        <rect key="frame" x="0.0" y="50" width="75" height="30"/>
+                                        <state key="normal" title="2 Sections"/>
+                                        <connections>
+                                            <action selector="showSearch:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="M9q-Pa-m84"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YR0-Bh-uBH">
+                                        <rect key="frame" x="0.0" y="100" width="75" height="30"/>
+                                        <state key="normal" title="3 Sections"/>
+                                        <connections>
+                                            <action selector="showManySections:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="9f9-Le-Svr"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="XTF-5X-JLS" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="0y7-P4-3VZ"/>
-                            <constraint firstItem="pr7-Wb-IVK" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="REu-6C-pDk"/>
-                            <constraint firstItem="pr7-Wb-IVK" firstAttribute="top" secondItem="XTF-5X-JLS" secondAttribute="bottom" constant="43" id="Tb2-Vz-3uC"/>
-                            <constraint firstItem="XTF-5X-JLS" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="50" id="hYW-zD-1r5"/>
+                            <constraint firstItem="8gl-yW-PhV" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="150" id="BVW-9s-q36"/>
+                            <constraint firstAttribute="trailing" secondItem="8gl-yW-PhV" secondAttribute="trailing" constant="150" id="O2Q-6B-pDn"/>
+                            <constraint firstItem="8gl-yW-PhV" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="50" id="gWK-hL-1Vt"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="button" destination="XTF-5X-JLS" id="nj1-ch-FtQ"/>
-                        <outlet property="textField" destination="pr7-Wb-IVK" id="AvQ-x8-UQd"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>

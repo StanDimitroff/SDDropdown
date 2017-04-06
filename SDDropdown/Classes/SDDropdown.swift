@@ -14,6 +14,7 @@ public final class SDDropdown: UIView {
 
     private let defaultDimColor = UIColor.black.withAlphaComponent(0.5).cgColor
     private let overlayView = UIView()
+    private let scrollView = UIScrollView()
     private let tableContainerView = UIView()
     private var cellNib: UINib!
     private var kbFrame: CGRect = .zero
@@ -21,7 +22,8 @@ public final class SDDropdown: UIView {
     fileprivate let notificationCenter = NotificationCenter.default
     fileprivate var presenter: UIViewController?
     fileprivate var rowHeight: CGFloat?
-    fileprivate var multiselect: Bool = false
+    fileprivate var multiselect: Bool!
+    fileprivate var searchField: Bool!
     fileprivate var targetView: UIView!
     fileprivate var selectedData: [String] = []
     fileprivate var tapGesture: UITapGestureRecognizer?
@@ -71,6 +73,7 @@ public final class SDDropdown: UIView {
                 targetView: UIView,
                 presenter: UIViewController? = nil,
                 multiselect: Bool? = nil,
+                searchField: Bool? = nil,
                 rowHeight: CGFloat? = nil,
                 selectionIndexPath: IndexPath? = nil,
                 cellNib: UINib) {
@@ -78,6 +81,7 @@ public final class SDDropdown: UIView {
         self.targetView         = targetView
         self.presenter          = presenter ?? UIApplication.shared.keyWindow?.rootViewController
         self.multiselect        = multiselect ?? false
+        self.searchField        = searchField ?? false
         self.rowHeight          = rowHeight
         self.selectionIndexPath = selectionIndexPath
         self.cellNib            = cellNib
@@ -96,10 +100,10 @@ public final class SDDropdown: UIView {
     }
 
     private func setTableContainerView() {
-        tableContainerView.frame = CGRect(x: self.frame.origin.x + 10,
-                                              y: targetView.frame.maxY + 8,
-                                              width: self.frame.width - 20,
-                                              height: 0)
+        tableContainerView.frame = CGRect(x: 0,
+                                          y: 0,
+                                          width: self.frame.width - 20,
+                                          height: 0)
 
         tableContainerView.layer.cornerRadius = 10
         tableContainerView.layer.masksToBounds = true
@@ -132,14 +136,61 @@ public final class SDDropdown: UIView {
         })
     }
 
+    private func layoutDropdown() {
+        if kbFrame != .zero {
+            let frame = CGRect(x: tableContainerView.frame.origin.x,
+                               y: 20,
+                               width: self.frame.width,
+                               height: self.frame.height - kbFrame.height)
+            let visibleView = UIView(frame: frame)
+
+            var newY: CGFloat = tableContainerView.frame.origin.y
+            let tableContainerMaxY = tableContainerView.frame.maxY
+            let keyboardY = kbFrame.origin.y
+
+            if tableContainerMaxY > keyboardY {
+                let delta = abs(tableContainerMaxY - keyboardY) + 8
+                newY -= delta
+
+                if newY < visibleView.frame.origin.y {
+                    newY = visibleView.frame.origin.y
+                }
+
+                UIView.animate(withDuration: 0.2, animations: {
+                    self.tableContainerView.frame.origin.y = newY
+                })
+            }
+        } else {
+
+        }
+    }
+
     private func setupTableView() {
         tableView.frame = tableContainerView.frame
         tableView.allowsMultipleSelection = multiselect
 
         tableView.register(cellNib, forCellReuseIdentifier: cellReuseIdentifier)
+
+        if searchField {
+            let headerView = UIView(frame: CGRect(x: 0,
+                                                  y: 0,
+                                                  width: tableContainerView.frame.width,
+                                                  height: 40))
+
+            let searchField = UITextField(frame: CGRect(x: 0,
+                                                        y: 0,
+                                                        width: headerView.frame.width - 20,
+                                                        height: headerView.frame.height - 10))
+            searchField.borderStyle = .roundedRect
+
+            searchField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+            headerView.addSubview(searchField)
+            searchField.center = headerView.center
+            tableView.tableHeaderView = headerView
+        }
         
         if multiselect {
-            let headerView = UIView(frame: CGRect(x: 0,
+            let footerView = UIView(frame: CGRect(x: 0,
                                                   y: 0,
                                                   width: tableContainerView.frame.width,
                                                   height: 40))
@@ -147,20 +198,19 @@ public final class SDDropdown: UIView {
 
             let doneButton: UIButton = UIButton(frame: CGRect(x: 0,
                                                               y: 0,
-                                                              width: headerView.frame.width - 10,
-                                                              height: headerView.frame.height - 10))
+                                                              width: footerView.frame.width - 10,
+                                                              height: footerView.frame.height - 10))
             doneButton.setTitle("Done", for: .normal)
             doneButton.backgroundColor = .purple
             doneButton.layer.cornerRadius = 10
             doneButton.addTarget(self, action: #selector(done), for: .touchUpInside)
 
-            headerView.addSubview(doneButton)
-            doneButton.center = headerView.center
+            footerView.addSubview(doneButton)
+            doneButton.center = footerView.center
 
-            tableView.tableHeaderView = headerView
+            tableView.tableFooterView = footerView
         }
 
-        tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
         tableView.dataSource = self
         tableView.delegate = self
@@ -223,13 +273,23 @@ public final class SDDropdown: UIView {
     @objc
     private func keyboardDidShow(_ notification: Notification) {
         kbFrame = keyboardFrame(notification)
+        layoutDropdown()
         adjustDropdownHeight()
     }
 
     @objc
     private func keyboardDidHide(_ notification: Notification) {
         kbFrame = .zero
+        UIView.animate(withDuration: 0.2, animations: {
+            self.tableContainerView.center = self.center
+        })
+
         adjustDropdownHeight()
+    }
+
+    @objc
+    private func textFieldDidChange(_ textField: UITextField) {
+        filter(textField.text!)
     }
 
     @objc
@@ -251,13 +311,13 @@ public final class SDDropdown: UIView {
         let overlayPath = UIBezierPath(rect: self.bounds)
         overlayPath.usesEvenOddFillRule = true
 
-        let convertedFrame = targetView.superview?.convert(targetView.frame, to: overlayView)
+        //let convertedFrame = targetView.superview?.convert(targetView.frame, to: overlayView)
 
-        if let cf = convertedFrame {
-            let highlightedFrame = cf.insetBy(dx: -5, dy: -5)
-            let transparentPath = UIBezierPath(roundedRect: highlightedFrame, cornerRadius: 5)
-            overlayPath.append(transparentPath)
-        }
+//        if let cf = convertedFrame {
+//            let highlightedFrame = cf.insetBy(dx: -5, dy: -5)
+//            let transparentPath = UIBezierPath(roundedRect: highlightedFrame, cornerRadius: 5)
+//            overlayPath.append(transparentPath)
+//        }
 
         let fillLayer = CAShapeLayer()
         fillLayer.path = overlayPath.cgPath
@@ -329,6 +389,7 @@ public final class SDDropdown: UIView {
                     self.tableContainerView.transform = CGAffineTransform.identity
                     presenter.view.addSubview(self)
                     self.adjustDropdownHeight()
+                    self.tableContainerView.center = self.center
                 }
             })
         }
@@ -342,7 +403,7 @@ public final class SDDropdown: UIView {
     /// Filter by term
     ///
     /// - Parameter term: the term for filtering
-    public func filter(_ term: String) {
+    private func filter(_ term: String) {
         if !term.isEmpty {
             filteredRows.removeAll(keepingCapacity: false)
             filteredRows = rows.filter { value in
