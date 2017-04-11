@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.5"></a>
+## [1.0.5](https://github.com/StanDimitroff/SDDropdown/compare/v1.0.4...v1.0.5) (2017-04-11)
+
+
+### Features
+
+* create selectable protocol on which custom models have to comform ([0bea3c8](https://github.com/StanDimitroff/SDDropdown/commit/0bea3c8))
+
+
+
 <a name="1.0.4"></a>
 ## [1.0.4](https://github.com/StanDimitroff/SDDropdown/compare/v1.0.3...v1.0.4) (2017-04-06)
 
