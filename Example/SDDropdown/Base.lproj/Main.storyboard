@@ -20,8 +20,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="8gl-yW-PhV">
-                                <rect key="frame" x="150" y="70" width="75" height="130"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="200" translatesAutoresizingMaskIntoConstraints="NO" id="8gl-yW-PhV">
+                                <rect key="frame" x="150" y="88.5" width="75" height="490"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XTF-5X-JLS">
                                         <rect key="frame" x="0.0" y="0.0" width="75" height="30"/>
@@ -31,14 +31,14 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bwh-gq-feK">
-                                        <rect key="frame" x="0.0" y="50" width="75" height="30"/>
+                                        <rect key="frame" x="0.0" y="230" width="75" height="30"/>
                                         <state key="normal" title="2 Sections"/>
                                         <connections>
                                             <action selector="showSearch:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="M9q-Pa-m84"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YR0-Bh-uBH">
-                                        <rect key="frame" x="0.0" y="100" width="75" height="30"/>
+                                        <rect key="frame" x="0.0" y="460" width="75" height="30"/>
                                         <state key="normal" title="3 Sections"/>
                                         <connections>
                                             <action selector="showManySections:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="9f9-Le-Svr"/>
@@ -49,9 +49,9 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="8gl-yW-PhV" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="150" id="BVW-9s-q36"/>
+                            <constraint firstItem="8gl-yW-PhV" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="9h9-FI-9jm"/>
                             <constraint firstAttribute="trailing" secondItem="8gl-yW-PhV" secondAttribute="trailing" constant="150" id="O2Q-6B-pDn"/>
-                            <constraint firstItem="8gl-yW-PhV" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="50" id="gWK-hL-1Vt"/>
+                            <constraint firstItem="8gl-yW-PhV" firstAttribute="centerY" secondItem="kh9-bI-dsS" secondAttribute="centerY" id="q7J-H8-f2W"/>
                         </constraints>
                     </view>
                 </viewController>

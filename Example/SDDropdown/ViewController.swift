@@ -11,17 +11,10 @@ import SDDropdown
 
 class ViewController: UIViewController {
 
-    let rows = ["Test", "Mest", "Rest"]
-
-    let twoSections: [String: [String]] = [
-        "First section": ["One", "Two"],
-        "Second section": ["First", "Second"]
-    ]
-
-    let threeSections: [String: [String]] = [
-        "First section": ["One", "Two"],
-        "Second section": ["First", "Second"],
-        "Third section": ["Test", "Test1", "Test2"]
+    let users: [User] = [
+        User(id: 1, firstName: "Stanislav", lastName: "Dimitrov", gender: "male", age: 30),
+        User(id: 2, firstName: "Test", lastName: "Testov", gender: "male", age: 20),
+        User(id: 3, firstName: "Testka", lastName: "Testova", gender: "female", age: 21)
     ]
 
     override func viewDidLoad() {
@@ -29,7 +22,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func showDropdown(_ sender: UIButton) {
-        let dropdown = SDDropdown(collection: rows, targetView: sender, presenter: self, multiselect: false, searchField: false, cellNib: UINib(nibName: "CustomCell", bundle: nil))
+        let dropdown = SDDropdown(collection: users, targetView: sender, cellNib: UINib(nibName: "CustomCell", bundle: nil), presenter: self)
 
         dropdown.configureCell = { ip, value, cell in
             guard let cell = cell as? CustomCell else { return }
@@ -38,29 +31,49 @@ class ViewController: UIViewController {
 
         dropdown.show()
 
-        dropdown.onSelect = { value, _, ip in
-            print(value)
+        dropdown.onSelect = { selected, _, ip in
+            print(selected)
             print(ip.row)
         }
     }
 
     @IBAction func showSearch(_ sender: UIButton) {
-        let dropdown = SDDropdown(collection: twoSections, targetView: sender, presenter: self, multiselect: true, searchField: true, cellNib: UINib(nibName: "CustomCell", bundle: nil))
+        let twoSections: [String: [User]] = [
+            "First section": users,
+            "Second section": users
+        ]
+
+        let dropdown = SDDropdown(collection: twoSections, targetView: sender, cellNib: UINib(nibName: "CustomCell", bundle: nil), presenter: self, multiselect: true, searchField: true)
 
         dropdown.configureCell = { ip, value, cell in
             guard let cell = cell as? CustomCell else { return }
             cell.valueLabel.text = value
+        }
+
+        dropdown.onMultiSelect = { selected, ip in
+            print(selected)
         }
 
         dropdown.show()
     }
 
     @IBAction func showManySections(_ sender: UIButton) {
-        let dropdown = SDDropdown(collection: threeSections, targetView: sender, presenter: self, multiselect: true, searchField: true, cellNib: UINib(nibName: "CustomCell", bundle: nil))
+
+        let threeSections: [String: [User]] = [
+            "First section": users,
+            "Second section": users,
+            "Third section": users
+        ]
+
+        let dropdown = SDDropdown(collection: threeSections, targetView: sender, cellNib: UINib(nibName: "CustomCell", bundle: nil), presenter: self, multiselect: true, searchField: true)
 
         dropdown.configureCell = { ip, value, cell in
             guard let cell = cell as? CustomCell else { return }
             cell.valueLabel.text = value
+        }
+
+        dropdown.onMultiSelect = { selected, ip in
+            print(selected)
         }
 
         dropdown.show()

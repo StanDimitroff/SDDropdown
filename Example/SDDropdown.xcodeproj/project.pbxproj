@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		446922931E8965CE00EB4829 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 446922921E8965CE00EB4829 /* CustomCell.swift */; };
 		446922951E896C2D00EB4829 /* CustomCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 446922941E896C2C00EB4829 /* CustomCell.xib */; };
+		44B44A401E9CBC9B00839264 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44B44A3F1E9CBC9B00839264 /* User.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
@@ -34,6 +35,7 @@
 		2AAE69D5503B8D9229041404 /* Pods-SDDropdown_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDDropdown_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-SDDropdown_Example/Pods-SDDropdown_Example.release.xcconfig"; sourceTree = "<group>"; };
 		446922921E8965CE00EB4829 /* CustomCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 		446922941E896C2C00EB4829 /* CustomCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomCell.xib; sourceTree = "<group>"; };
+		44B44A3F1E9CBC9B00839264 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		48FB632F0A1DCFEC0845264D /* Pods_SDDropdown_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDDropdown_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD01AFB9204008FA782 /* SDDropdown_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDDropdown_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
+				44B44A3F1E9CBC9B00839264 /* User.swift */,
 				446922941E896C2C00EB4829 /* CustomCell.xib */,
 				446922921E8965CE00EB4829 /* CustomCell.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
@@ -370,6 +373,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44B44A401E9CBC9B00839264 /* User.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				446922931E8965CE00EB4829 /* CustomCell.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
