@@ -32,7 +32,9 @@
 		34EFE6F220B21F9903098D559D8B1AF5 /* SuiteHooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F10AA7D49AA59EDAA9771CD96960B9 /* SuiteHooks.swift */; };
 		3521ED9ABE12ADAE945D841259165395 /* World+DSL.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93CBD5A8C953715B286CC18EBD89EA5 /* World+DSL.swift */; };
 		3915DBB4731CB17B255A7FE86E240B6E /* CwlCatchBadInstruction.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE6D090220683EB93ACD11A04038DD /* CwlCatchBadInstruction.m */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
-		446922901E894C2E00EB4829 /* SDDropdownCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4469228F1E894C2E00EB4829 /* SDDropdownCell.swift */; };
+		447C4EDE1F385933002A19A0 /* SDDropdown+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 447C4EDD1F385933002A19A0 /* SDDropdown+Model.swift */; };
+		447C4EE01F385973002A19A0 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 447C4EDF1F385973002A19A0 /* Configuration.swift */; };
+		447C4EEB1F3A1450002A19A0 /* SDDropdownCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4469228F1E894C2E00EB4829 /* SDDropdownCell.swift */; };
 		469E9C3ED9FD6009F7C9AAF9E537E212 /* Nimble.h in Headers */ = {isa = PBXBuildFile; fileRef = CE7DD158EC41F47A2796AB19C2CD1AD8 /* Nimble.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4A7297FF0CEFCA49E18481C7AF0F3D3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32DF21EF8268E32D359CD23F2CF3EFE3 /* Foundation.framework */; };
 		4F3F103945CC52D0A3B8A891BB0E21C4 /* RaisesException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30778608352B15B9CFC7475AD8F932AB /* RaisesException.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
@@ -185,6 +187,8 @@
 		42D86387CC1B9080A46815A274E15162 /* Pods-SDDropdown_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SDDropdown_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		4469228F1E894C2E00EB4829 /* SDDropdownCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDDropdownCell.swift; sourceTree = "<group>"; };
 		446922911E89502300EB4829 /* SDDropdownCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SDDropdownCell.xib; sourceTree = "<group>"; };
+		447C4EDD1F385933002A19A0 /* SDDropdown+Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDDropdown+Model.swift"; sourceTree = "<group>"; };
+		447C4EDF1F385973002A19A0 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		4606F71071333AEDF06D8E31389AECC9 /* World.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = World.h; path = Sources/QuickObjectiveC/World.h; sourceTree = "<group>"; };
 		462592DD75CDB244835F58221773956C /* Closures.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Closures.swift; path = Sources/Quick/Hooks/Closures.swift; sourceTree = "<group>"; };
 		473162EAADE47F759500100475A4A4BE /* Quick.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Quick.xcconfig; sourceTree = "<group>"; };
@@ -553,6 +557,8 @@
 			isa = PBXGroup;
 			children = (
 				259F5E1F4DDCB5B9F8F610686CBD8F96 /* SDDropdown.swift */,
+				447C4EDD1F385933002A19A0 /* SDDropdown+Model.swift */,
+				447C4EDF1F385973002A19A0 /* Configuration.swift */,
 				4469228F1E894C2E00EB4829 /* SDDropdownCell.swift */,
 				446922911E89502300EB4829 /* SDDropdownCell.xib */,
 			);
@@ -888,7 +894,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				446922901E894C2E00EB4829 /* SDDropdownCell.swift in Sources */,
+				447C4EE01F385973002A19A0 /* Configuration.swift in Sources */,
+				447C4EEB1F3A1450002A19A0 /* SDDropdownCell.swift in Sources */,
+				447C4EDE1F385933002A19A0 /* SDDropdown+Model.swift in Sources */,
 				2C45DD2EB2F2A6E3035BDE105DE82ED4 /* SDDropdown-dummy.m in Sources */,
 				EBCFF11E4906B247C8651A184F5AC49D /* SDDropdown.swift in Sources */,
 			);

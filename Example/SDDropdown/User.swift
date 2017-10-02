@@ -17,15 +17,23 @@ struct User: Selectable {
     let gender: String
     let age: Int
 
-    var key: String {
+    var title: String {
+        return "\(firstName) \(lastName)"
+    }
+
+    var filterKey: String {
+        return self.title
+    }
+
+    var orderKey: String {
         return self.firstName
     }
 
     public init(id: Int, firstName: String, lastName: String, gender: String, age: Int) {
-        self.id = id
+        self.id        = id
         self.firstName = firstName
-        self.lastName = lastName
-        self.gender = gender
-        self.age = age
+        self.lastName  = lastName
+        self.gender    = gender
+        self.age       = age
     }
 }

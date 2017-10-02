@@ -17,13 +17,10 @@ class ViewController: UIViewController {
         User(id: 3, firstName: "Testka", lastName: "Testova", gender: "female", age: 21)
     ]
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-
     @IBAction func showDropdown(_ sender: UIButton) {
-        let dropdown = SDDropdown(collection: users, targetView: sender, cellNib: UINib(nibName: "CustomCell", bundle: nil), presenter: self)
+        let dropdown = SDDropdown(config: nil)
 
+        dropdown.data = users
         dropdown.configureCell = { ip, value, cell in
             guard let cell = cell as? CustomCell else { return }
             cell.valueLabel.text = value
@@ -38,13 +35,14 @@ class ViewController: UIViewController {
     }
 
     @IBAction func showSearch(_ sender: UIButton) {
-        let twoSections: [String: [User]] = [
-            "First section": users,
-            "Second section": users
+        let twoSections: [DropdownSection] = [
+            DropdownSection("First section", rows: users),
+            DropdownSection("Second section", rows: users)
         ]
 
-        let dropdown = SDDropdown(collection: twoSections, targetView: sender, cellNib: UINib(nibName: "CustomCell", bundle: nil), presenter: self, multiselect: true, searchField: true)
+        let dropdown = SDDropdown(config: nil)
 
+        dropdown.data = twoSections
         dropdown.configureCell = { ip, value, cell in
             guard let cell = cell as? CustomCell else { return }
             cell.valueLabel.text = value
@@ -59,14 +57,15 @@ class ViewController: UIViewController {
 
     @IBAction func showManySections(_ sender: UIButton) {
 
-        let threeSections: [String: [User]] = [
-            "First section": users,
-            "Second section": users,
-            "Third section": users
+        let threeSections: [DropdownSection] = [
+            DropdownSection("First section", rows: users),
+            DropdownSection("Second section", rows: users),
+            DropdownSection("Third section", rows: users)
         ]
 
-        let dropdown = SDDropdown(collection: threeSections, targetView: sender, cellNib: UINib(nibName: "CustomCell", bundle: nil), presenter: self, multiselect: true, searchField: true)
+        let dropdown = SDDropdown(config: nil)
 
+        dropdown.data = threeSections
         dropdown.configureCell = { ip, value, cell in
             guard let cell = cell as? CustomCell else { return }
             cell.valueLabel.text = value

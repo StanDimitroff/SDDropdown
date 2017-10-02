@@ -7,101 +7,87 @@
 //
 
 public protocol Selectable {
-    var key: String { get }
+    var title: String { get }
+    var filterKey: String { get }
+    var orderKey: String { get }
 }
+
+public typealias CellConfiguration = ((Int, String, SDDropdownCell) -> ())
+public typealias SingleSelection   = ((Selectable, IndexPath?, IndexPath) -> ())
+public typealias MultipleSelection = (([Selectable], IndexPath?) -> ())
 
 import UIKit
 
-private let cellReuseIdentifier: String = "dropdownCell"
-
 public final class SDDropdown: UIView {
 
-    private let defaultDimColor = UIColor.black.withAlphaComponent(0.5).cgColor
+    // MARK: - Properties
     private let overlayView = UIView()
     private let tableContainerView = UIView()
     private let searchTextField = UITextField()
-    private var cellNib: UINib!
+    
     private var kbFrame: CGRect = .zero
 
     fileprivate let notificationCenter = NotificationCenter.default
-    fileprivate var presenter: UIViewController!
-    fileprivate var rowHeight: CGFloat?
-    fileprivate var multiselect: Bool!
-    fileprivate var searchField: Bool!
-    fileprivate var targetView: UIView!
-    fileprivate var selectedData: [Selectable] = []
+
     fileprivate var tapGesture: UITapGestureRecognizer?
     fileprivate var tableView: UITableView = UITableView()
+    
+    var presenter: UIViewController
+    var targetView: UIView
+    var selectionIndexPath: IndexPath?
 
-    fileprivate var sections: [String: [Selectable]] = [:] {
+    public var data: Any! {
         didSet {
-            filteredSections = sections
+            viewModel = Model(collection: data)
         }
     }
 
-    fileprivate var filteredSections: [String: [Selectable]] = [:]
 
-    fileprivate var rows: [Selectable] = [] {
-        didSet {
-            rows = rows.sorted {
-                (s1, s2) -> Bool in return s1.key.localizedStandardCompare(s2.key) == .orderedAscending
-            }
+    fileprivate var viewModel: Model!
+    fileprivate var config: Configuration
 
-            filteredRows = rows
+    // MARK: - Event handlers
+    public var configureCell: CellConfiguration?
+    public var onSelect: SingleSelection?
+    public var onMultiSelect: MultipleSelection?
+
+//    fileprivate var rows: [Selectable] = [] {
+//        didSet {
+//            rows = rows.sorted {
+//                (s1, s2) -> Bool in return s1.key.localizedStandardCompare(s2.key) == .orderedAscending
+//            }
+//
+//            filteredRows = rows
+//        }
+//    }
+//
+
+
+    // MARK: - Init
+    public init(config: Configuration?) {
+
+        if let config = config {
+            self.config = config
+        } else {
+            self.config = Configuration.defaultConfig
         }
-    }
 
-    fileprivate var filteredRows: [Selectable] = []
-
-    public var collection: Any! {
-        didSet {
-            if let sections = collection as? [String: [Selectable]] {
-                self.sections = sections
-            } else if let rows = collection as? [Selectable] {
-                self.rows = rows
-            }
-        }
-    }
-
-    public var selectionIndexPath: IndexPath?
-
-    public var configureCell: ((Int, String, SDDropdownCell) -> ())?
-    public var onSelect: ((Selectable, IndexPath?, IndexPath) -> ())?
-    public var onMultiSelect: (([Selectable], IndexPath?) -> ())?
-
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    public init(collection: Any,
-                targetView: UIView,
-                cellNib: UINib,
-                presenter: UIViewController? = nil,
-                multiselect: Bool? = nil,
-                searchField: Bool? = nil,
-                rowHeight: CGFloat? = nil,
-                selectionIndexPath: IndexPath? = nil) {
-
-        self.targetView         = targetView
-        self.cellNib            = cellNib
-        self.presenter          = presenter ?? UIApplication.shared.keyWindow?.rootViewController!
-        self.multiselect        = multiselect ?? false
-        self.searchField        = searchField ?? false
-        self.rowHeight          = rowHeight
-        self.selectionIndexPath = selectionIndexPath
+        self.presenter          = self.config.presenter
+        self.targetView         = self.config.anchorView
+        self.selectionIndexPath = self.config.selectionIndexPath
 
         let viewFrame: CGRect = self.presenter.view.frame
         super.init(frame: viewFrame)
 
         addKeyboardObservers()
         registerForOrientationChanges()
-
-        setCollection(collection)
     }
 
-    private func setCollection(_ collection: Any) {
-        self.collection = collection
+    public required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: - Private API
 
     private func setTableContainerView() {
         tableContainerView.frame = CGRect(x: targetView.frame.origin.x,
@@ -170,11 +156,11 @@ public final class SDDropdown: UIView {
 
     private func setupTableView() {
         tableView.frame = tableContainerView.frame
-        tableView.allowsMultipleSelection = multiselect
+        tableView.allowsMultipleSelection = config.multiselect
 
-        tableView.register(cellNib, forCellReuseIdentifier: cellReuseIdentifier)
+        tableView.register(config.cellNib, forCellReuseIdentifier: config.cellReuseIdentifier)
 
-        if searchField {
+        if config.searchField {
             let headerView = UIView(frame: CGRect(x: 0,
                                                   y: 0,
                                                   width: tableContainerView.frame.width,
@@ -205,7 +191,7 @@ public final class SDDropdown: UIView {
             tableView.tableHeaderView = headerView
         }
         
-        if multiselect {
+        if config.multiselect {
             let footerView = UIView(frame: CGRect(x: 0,
                                                   y: 0,
                                                   width: tableContainerView.frame.width,
@@ -282,7 +268,8 @@ public final class SDDropdown: UIView {
                                                   object: nil)
     }
 
-    func orientationChanged() {
+    @objc
+    private func orientationChanged() {
         setNeedsDisplay()
     }
     
@@ -320,13 +307,17 @@ public final class SDDropdown: UIView {
 
     @objc
     private func textFieldDidChange(_ textField: UITextField) {
-        filter(textField.text!)
+        guard let term = textField.text else { return }
+        viewModel.filter(term)
+
+        reloadTable()
+        adjustDropdownHeight()
     }
 
     @objc
     private func done() {
         dismiss()
-        onMultiSelect?(selectedData, selectionIndexPath)
+        onMultiSelect?(viewModel.selectedData, selectionIndexPath)
     }
 
     fileprivate func setupOverlay() {
@@ -353,7 +344,7 @@ public final class SDDropdown: UIView {
         let fillLayer = CAShapeLayer()
         fillLayer.path = overlayPath.cgPath
         fillLayer.fillRule = kCAFillRuleEvenOdd
-        fillLayer.fillColor = defaultDimColor
+        fillLayer.fillColor = config.dimColor.cgColor
 
         overlayView.layer.addSublayer(fillLayer)
 
@@ -411,7 +402,7 @@ public final class SDDropdown: UIView {
 
     /// Show dropdown with animation
     public func show() {
-        if let presenter = self.presenter {
+        //if let presenter = self.presenter {
             setupOverlay()
 
             UIView.animate(withDuration: 0.35, animations: {
@@ -419,45 +410,17 @@ public final class SDDropdown: UIView {
             }, completion: { finished in
                 UIView.animate(withDuration: 0.35) {
                     self.tableContainerView.transform = CGAffineTransform.identity
-                    presenter.view.addSubview(self)
+                    self.presenter.view.addSubview(self)
                     self.adjustDropdownHeight()
                     self.tableContainerView.center = self.center
                 }
             })
-        }
+        //}
     }
 
     /// Hide dropdown
     public func hide() {
         dismiss()
-    }
-
-    /// Filter by term
-    ///
-    /// - Parameter term: the term for filtering
-    private func filter(_ term: String) {
-        if !term.isEmpty {
-            filteredRows.removeAll(keepingCapacity: false)
-            filteredRows = rows.filter { value in
-                return value.key.lowercased().contains(term.lowercased())
-            }
-
-            filteredSections.removeAll(keepingCapacity: false)
-            sections.forEach { key, value in
-
-                let filteredRows = value.filter { value in
-                    return value.key.lowercased().contains(term.lowercased())
-                }
-
-                filteredSections[key] = filteredRows
-            }
-        } else {
-            filteredRows = rows
-            filteredSections = sections
-        }
-
-        reloadTable()
-        adjustDropdownHeight()
     }
 
     deinit {
@@ -466,93 +429,68 @@ public final class SDDropdown: UIView {
     }
 }
 
-// MARK: UITableViewDataSource
+// MARK: - UITableViewDataSource
 extension SDDropdown: UITableViewDataSource {
     public func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.isEmpty ? 1 : sections.keys.count
+        return viewModel.numberOfSections
     }
 
     public func tableView(_ tableView: UITableView,
                           titleForHeaderInSection section: Int) -> String? {
-        if !sections.isEmpty {
-            return Array(sections.keys)[section]
-        }
-
-        return nil
+        return viewModel.titleForHeaderIn(section: section)
     }
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if !filteredSections.isEmpty {
-            return Array(filteredSections.values)[section].count
-        }
-
-        return filteredRows.count
+        return viewModel.numberOfRowsIn(section: section)
     }
 
     public func tableView(_ tableView: UITableView,
                           cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var value: String = ""
+        let row = viewModel.rowAtIndexPath(indexPath: indexPath)
 
-        if !sections.isEmpty {
-            value = Array(filteredSections.values)[indexPath.section][indexPath.row].key
-        } else {
-            value = filteredRows[indexPath.row].key
-        }
-
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier,
-                                                 for: indexPath) as! SDDropdownCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: config.cellReuseIdentifier,
+                                                 for: indexPath) as? SDDropdownCell
+            else { fatalError("Your cell must inherit from SDDropdownCell", file: #file, line: #line)}
         cell.selectionStyle = .none
 
-        configureCell?(indexPath.row, value, cell)
+        configureCell?(indexPath.row, row.title, cell)
 
         return cell
     }
 }
 
-// MARK: UITableViewDelegate
+// MARK: - UITableViewDelegate
 extension SDDropdown: UITableViewDelegate {
     public func tableView(_ tableView: UITableView,
                           heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return rowHeight ?? 50
+        return config.rowHeight
     }
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         hideKeyboard()
 
-        var selected: Selectable!
-        if !filteredSections.isEmpty {
-            selected = Array(filteredSections.values)[indexPath.section][indexPath.row]
-        } else {
-            selected = filteredRows[indexPath.row]
-        }
-
-        if !multiselect {
+        if !config.multiselect {
             dismiss()
+
+            let selected = viewModel.rowAtIndexPath(indexPath: indexPath)
             onSelect?(selected, self.selectionIndexPath, indexPath)
         } else {
-            let cell = tableView.cellForRow(at: indexPath)
-            cell?.accessoryType = .checkmark
-            selectedData.append(selected)
+            viewModel.addSelected(withIndexPath: indexPath)
+
+            guard let cell = tableView.cellForRow(at: indexPath) as? SDDropdownCell
+                else { fatalError("Wrong indexPath", file: #file, line: #line) }
+            cell.accessoryType = .checkmark
         }
     }
 
     public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         hideKeyboard()
 
-        var selected: Selectable!
-        if !filteredSections.isEmpty {
-            selected = Array(filteredSections.values)[indexPath.section][indexPath.row]
-        } else {
-            selected = filteredRows[indexPath.row]
-        }
+        viewModel.removeSelected(atIndexPath: indexPath)
 
-        let deselectedIndex = selectedData.index(where: { $0.key == selected.key })
-        guard let index = deselectedIndex else { return }
-
-        selectedData.remove(at: index)
-
-        let cell = tableView.cellForRow(at: indexPath)
-        cell?.accessoryType = .none
+        guard let cell = tableView.cellForRow(at: indexPath) as? SDDropdownCell
+        else { fatalError("Wrong indexPath", file: #file, line: #line) }
+        cell.accessoryType = .none
     }
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
