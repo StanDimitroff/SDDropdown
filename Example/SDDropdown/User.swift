@@ -29,6 +29,10 @@ struct User: Selectable {
         return self.firstName
     }
 
+    var identifier: String {
+        return "\(self.id)"
+    }
+
     public init(id: Int, firstName: String, lastName: String, gender: String, age: Int) {
         self.id        = id
         self.firstName = firstName
@@ -37,3 +41,4 @@ struct User: Selectable {
         self.age       = age
     }
 }
+

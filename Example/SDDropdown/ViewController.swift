@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     ]
 
     @IBAction func showDropdown(_ sender: UIButton) {
-        let dropdown = SDDropdown(config: nil)
+        let dropdown = SDDropdown()
 
         dropdown.data = users
         dropdown.configureCell = { ip, value, cell in
@@ -40,7 +40,7 @@ class ViewController: UIViewController {
             DropdownSection("Second section", rows: users)
         ]
 
-        let dropdown = SDDropdown(config: nil)
+        let dropdown = SDDropdown()
 
         dropdown.data = twoSections
         dropdown.configureCell = { ip, value, cell in
@@ -63,7 +63,7 @@ class ViewController: UIViewController {
             DropdownSection("Third section", rows: users)
         ]
 
-        let dropdown = SDDropdown(config: nil)
+        let dropdown = SDDropdown()
 
         dropdown.data = threeSections
         dropdown.configureCell = { ip, value, cell in
