@@ -22,8 +22,9 @@ public struct DropdownSection {
 
 extension SDDropdown {
 
-    class Model {
+    final class Model {
 
+        // MARK: - Properties
         private var collection: Any
         
         private var sections: [DropdownSection]         = []
@@ -32,29 +33,36 @@ extension SDDropdown {
         private var filteredSections: [DropdownSection] = []
         private var filteredRows: [DropdownRow]         = []
 
+        var preSelectedData: [DropdownRow]              = []
         var selectedData: [DropdownRow]                 = []
 
-        init(collection: Any) {
+        init(_ collection: Any) {
             self.collection = collection
 
             setCollection()
         }
 
+        // MARK: - Internal API
         var numberOfSections: Int {
             return sections.isEmpty ? 1 : sections.count
         }
 
-        func numberOfRowsIn(section: Int) -> Int {
-            return !filteredSections.isEmpty ? filteredSections[section].rows.count : filteredRows.count
+        func numberOfRows(inSection section: Int) -> Int {
+            return !filteredSections.isEmpty
+                ? filteredSections[section].rows.count
+                : filteredRows.count
         }
 
-        func titleForHeaderIn(section: Int) -> String? {
-            return !filteredSections.isEmpty ? filteredSections[section].title : nil
+        func titleForHeader(inSection section: Int) -> String? {
+            return !filteredSections.isEmpty
+                ? filteredSections[section].title
+                : nil
         }
 
         func rowAtIndexPath(indexPath: IndexPath) -> DropdownRow {
-            return !filteredSections.isEmpty ? filteredSections[indexPath.section].rows[indexPath.row] :
-            filteredRows[indexPath.row]
+            return !filteredSections.isEmpty
+                ? filteredSections[indexPath.section].rows[indexPath.row]
+                : filteredRows[indexPath.row]
         }
 
         func addSelected(withIndexPath indexPath: IndexPath) {
@@ -65,7 +73,8 @@ extension SDDropdown {
         func removeSelected(atIndexPath indexPath: IndexPath) {
             let selected = rowAtIndexPath(indexPath: indexPath)
 
-            let deselectedIndex = selectedData.index(where: { $0.title == selected.title })
+            let deselectedIndex = selectedData
+                .index(where: { $0.identifier == selected.identifier })
             guard let index = deselectedIndex else { return }
 
             selectedData.remove(at: index)
@@ -80,11 +89,19 @@ extension SDDropdown {
                 self.rows = rows
                 filteredRows = rows
             } else {
-                fatalError(
-                    "Only DropdownSection and DropdownRow are supported",
-                    file: #file,
-                    line: #line)
+                fatalError(Errors.unsupportedType, file: #file, line: #line)
             }
+        }
+
+        /// Append previously selected data
+        ///
+        /// - Parameter data: the data which will be added
+        func addPreselectedData(_ data: [Selectable]?) {
+            guard let preSelected = data else { return }
+
+            preSelectedData = preSelected
+
+            selectedData.append(contentsOf: preSelected)
         }
 
         /// Filter by term

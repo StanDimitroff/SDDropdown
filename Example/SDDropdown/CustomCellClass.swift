@@ -1,5 +1,5 @@
 //
-//  CustomCell.swift
+//  CustomCellClass.swift
 //  SDDropdown
 //
 //  Created by Stanislav Dimitrov on 3/27/17.
@@ -7,8 +7,7 @@
 //
 
 import UIKit
-import SDDropdown
 
-class CustomCell: SDDropdownCell {
+class CustomCellClass: UITableViewCell {
     
 }

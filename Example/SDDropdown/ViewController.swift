@@ -21,17 +21,13 @@ class ViewController: UIViewController {
         let dropdown = SDDropdown()
 
         dropdown.data = users
-        dropdown.configureCell = { ip, value, cell in
-            guard let cell = cell as? CustomCell else { return }
-            cell.valueLabel.text = value
-        }
-
-        dropdown.show()
 
         dropdown.onSelect = { selected, _, ip in
             print(selected)
             print(ip.row)
         }
+
+        dropdown.show()
     }
 
     @IBAction func showSearch(_ sender: UIButton) {
@@ -40,12 +36,16 @@ class ViewController: UIViewController {
             DropdownSection("Second section", rows: users)
         ]
 
-        let dropdown = SDDropdown()
+        let dropdown = SDDropdown(config: Configuration(
+            presenter: self,
+            cellNib: UINib(nibName: "CustomCellNib", bundle: nil)))
 
         dropdown.data = twoSections
-        dropdown.configureCell = { ip, value, cell in
-            guard let cell = cell as? CustomCell else { return }
-            cell.valueLabel.text = value
+
+        dropdown.configureCell = { _, value, cell in
+            guard let cell = cell as? CustomCellNib else { return }
+            cell.customView.backgroundColor = .orange
+            cell.customLabel.text = value
         }
 
         dropdown.onMultiSelect = { selected, ip in
@@ -63,12 +63,16 @@ class ViewController: UIViewController {
             DropdownSection("Third section", rows: users)
         ]
 
-        let dropdown = SDDropdown()
+        let dropdown = SDDropdown(config: Configuration(
+            presenter: self,
+            multiselect: true,
+            searchField: true,
+            cellClass: CustomCellClass.self))
 
         dropdown.data = threeSections
         dropdown.configureCell = { ip, value, cell in
-            guard let cell = cell as? CustomCell else { return }
-            cell.valueLabel.text = value
+            guard let cell = cell as? CustomCellClass else { return }
+            cell.textLabel?.text = value
         }
 
         dropdown.onMultiSelect = { selected, ip in

@@ -6,13 +6,7 @@
 //  Copyright (c) 2017 StanDimitroff. All rights reserved.
 //
 
-public protocol Selectable {
-    var title: String { get }
-    var filterKey: String { get }
-    var orderKey: String { get }
-}
-
-public typealias CellConfiguration = ((Int, String, SDDropdownCell) -> ())
+public typealias CellConfiguration = ((Int, String, UITableViewCell) -> ())
 public typealias SingleSelection   = ((Selectable, IndexPath?, IndexPath) -> ())
 public typealias MultipleSelection = (([Selectable], IndexPath?) -> ())
 
@@ -21,15 +15,19 @@ import UIKit
 public final class SDDropdown: UIView {
 
     // MARK: - Properties
-    private let overlayView = UIView()
+    private let overlayView        = UIView()
     private let tableContainerView = UIView()
+
     private let searchTextField = UITextField()
+
+    private let notificationCenter = NotificationCenter.default
     
     private var kbFrame: CGRect = .zero
 
-    fileprivate let notificationCenter = NotificationCenter.default
+    private(set) var viewModel: Model!
+    private(set) var config: Configuration
+    private(set) var tapGesture: UITapGestureRecognizer?
 
-    fileprivate var tapGesture: UITapGestureRecognizer?
     fileprivate var tableView: UITableView = UITableView()
     
     var presenter: UIViewController
@@ -38,13 +36,15 @@ public final class SDDropdown: UIView {
 
     public var data: Any! {
         didSet {
-            viewModel = Model(collection: data)
+            viewModel = Model(data)
         }
     }
 
-
-    fileprivate var viewModel: Model!
-    fileprivate var config: Configuration
+    public var preselectedData: [Selectable]? {
+        didSet {
+            viewModel.addPreselectedData(preselectedData)
+        }
+    }
 
     // MARK: - Event handlers
     public var configureCell: CellConfiguration?
@@ -64,7 +64,7 @@ public final class SDDropdown: UIView {
 
 
     // MARK: - Init
-    public init(config: Configuration?) {
+    public init(config: Configuration? = nil) {
 
         if let config = config {
             self.config = config
@@ -88,7 +88,6 @@ public final class SDDropdown: UIView {
     }
 
     // MARK: - Private API
-
     private func setTableContainerView() {
         tableContainerView.frame = CGRect(x: targetView.frame.origin.x,
                                           y: targetView.frame.origin.y,
@@ -158,7 +157,11 @@ public final class SDDropdown: UIView {
         tableView.frame = tableContainerView.frame
         tableView.allowsMultipleSelection = config.multiselect
 
-        tableView.register(config.cellNib, forCellReuseIdentifier: config.cellReuseIdentifier)
+        if let cellNib = config.cellNib {
+            tableView.register(cellNib, forCellReuseIdentifier: config.cellReuseIdentifier)
+        } else if let cellClass = config.cellClass {
+            tableView.register(cellClass, forCellReuseIdentifier: config.cellReuseIdentifier)
+        }
 
         if config.searchField {
             let headerView = UIView(frame: CGRect(x: 0,
@@ -402,20 +405,18 @@ public final class SDDropdown: UIView {
 
     /// Show dropdown with animation
     public func show() {
-        //if let presenter = self.presenter {
-            setupOverlay()
+        setupOverlay()
 
-            UIView.animate(withDuration: 0.35, animations: {
-                self.tableContainerView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-            }, completion: { finished in
-                UIView.animate(withDuration: 0.35) {
-                    self.tableContainerView.transform = CGAffineTransform.identity
-                    self.presenter.view.addSubview(self)
-                    self.adjustDropdownHeight()
-                    self.tableContainerView.center = self.center
-                }
-            })
-        //}
+        UIView.animate(withDuration: 0.35, animations: {
+            self.tableContainerView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        }, completion: { finished in
+            UIView.animate(withDuration: 0.35) {
+                self.tableContainerView.transform = CGAffineTransform.identity
+                self.presenter.view.addSubview(self)
+                self.adjustDropdownHeight()
+                self.tableContainerView.center = self.center
+            }
+        })
     }
 
     /// Hide dropdown
@@ -437,23 +438,32 @@ extension SDDropdown: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView,
                           titleForHeaderInSection section: Int) -> String? {
-        return viewModel.titleForHeaderIn(section: section)
+        return viewModel.titleForHeader(inSection: section)
     }
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRowsIn(section: section)
+        return viewModel.numberOfRows(inSection: section)
     }
 
     public func tableView(_ tableView: UITableView,
                           cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let row = viewModel.rowAtIndexPath(indexPath: indexPath)
 
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: config.cellReuseIdentifier,
-                                                 for: indexPath) as? SDDropdownCell
-            else { fatalError("Your cell must inherit from SDDropdownCell", file: #file, line: #line)}
+         let cell = tableView.dequeueReusableCell(withIdentifier: config.cellReuseIdentifier,
+                                                 for: indexPath)
+
         cell.selectionStyle = .none
+        cell.textLabel?.text = row.title
 
         configureCell?(indexPath.row, row.title, cell)
+
+        let contains = viewModel.preSelectedData.contains { $0.identifier == row.identifier }
+        if contains {
+            tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+            cell.accessoryType = .checkmark
+        } else {
+            cell.accessoryType = .none
+        }
 
         return cell
     }
@@ -477,8 +487,9 @@ extension SDDropdown: UITableViewDelegate {
         } else {
             viewModel.addSelected(withIndexPath: indexPath)
 
-            guard let cell = tableView.cellForRow(at: indexPath) as? SDDropdownCell
-                else { fatalError("Wrong indexPath", file: #file, line: #line) }
+            guard let cell = tableView.cellForRow(at: indexPath)
+                else { fatalError(Errors.invalidIndexPath, file: #file, line: #line) }
+
             cell.accessoryType = .checkmark
         }
     }
@@ -488,8 +499,9 @@ extension SDDropdown: UITableViewDelegate {
 
         viewModel.removeSelected(atIndexPath: indexPath)
 
-        guard let cell = tableView.cellForRow(at: indexPath) as? SDDropdownCell
-        else { fatalError("Wrong indexPath", file: #file, line: #line) }
+        guard let cell = tableView.cellForRow(at: indexPath)
+            else { fatalError(Errors.invalidIndexPath, file: #file, line: #line) }
+
         cell.accessoryType = .none
     }
 

@@ -6,7 +6,7 @@
 //
 //
 
-import Foundation
+import UIKit
 
 public final class Configuration {
 
@@ -20,7 +20,8 @@ public final class Configuration {
     let multiselect: Bool
     let rowHeight: CGFloat
     let searchField: Bool
-    let cellNib: UINib
+    let cellNib: UINib?
+    let cellClass: AnyClass?
     let selectionIndexPath: IndexPath?
 
     var anchorView: UIView {
@@ -30,14 +31,15 @@ public final class Configuration {
     /// Config Initializer
     ///
     /// - Parameters:
-    ///   - presenter: UIViewController instance resposible for presenting the view
+    ///   - presenter: UIViewController instance responsible for presenting the view
     ///   - targetView: targetView description
     ///   - multiselect: multiselect description
     ///   - searchField: searchField description
     ///   - rowHeight: rowHeight description
     ///   - dimColor: dimColor description
-    ///   - cellNib: <#cellNib description#>
-    ///   - selectionIndexPath: <#selectionIndexPath description#>
+    ///   - cellNib: the provided UINib
+    ///   - cellClass: the provided UITableViewCell class
+    ///   - selectionIndexPath: the IndexPath which the dropdown is presented from
     public init(
         presenter: UIViewController? = nil,
         targetView: UIView? = nil,
@@ -46,20 +48,22 @@ public final class Configuration {
         rowHeight: CGFloat? = nil,
         dimColor: UIColor? = nil,
         cellNib: UINib? = nil,
+        cellClass: AnyClass? = nil,
         selectionIndexPath: IndexPath? = nil) {
 
-        self.presenter          = presenter ?? Defaults.presenter
-        self.targetView         = targetView
-        self.multiselect        = multiselect ?? Defaults.hasMultiselect
-        self.searchField        = searchField ?? Defaults.hasSearchField
-        self.rowHeight          = rowHeight ?? Defaults.rowHeight
-        self.dimColor           = dimColor ?? Defaults.dimColor
-        self.cellNib            = cellNib ?? Defaults.cellNib
+        self.presenter   = presenter ?? Defaults.presenter
+        self.targetView  = targetView
+        self.multiselect = multiselect ?? Defaults.hasMultiselect
+        self.searchField = searchField ?? Defaults.hasSearchField
+        self.rowHeight   = rowHeight ?? Defaults.rowHeight
+        self.dimColor    = dimColor ?? Defaults.dimColor
+        self.cellNib     = cellNib ?? Defaults.cellNib
+        self.cellClass    = cellClass ?? Defaults.cellClass
         self.selectionIndexPath = selectionIndexPath
     }
 
     /// Default options configuration
-    public static var defaultConfig: Configuration {
+    static var defaultConfig: Configuration {
 
         return Configuration(
             presenter: Defaults.presenter,
@@ -69,6 +73,7 @@ public final class Configuration {
             rowHeight: Defaults.rowHeight,
             dimColor: Defaults.dimColor,
             cellNib: Defaults.cellNib,
+            cellClass: Defaults.cellClass,
             selectionIndexPath: nil)
     }
 }
@@ -80,6 +85,7 @@ extension Configuration {
         static let hasSearchField: Bool = false
         static let rowHeight: CGFloat   = 50
         static let dimColor: UIColor    = UIColor.black.withAlphaComponent(0.5)
-        static let cellNib: UINib       = UINib(nibName: "CustomCell", bundle: Bundle.main)
+        static let cellNib: UINib?       = nil
+        static let cellClass: AnyClass? = UITableViewCell.self
     }
 }
