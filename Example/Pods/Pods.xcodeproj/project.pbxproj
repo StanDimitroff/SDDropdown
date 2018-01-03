@@ -83,7 +83,7 @@
 		75ABB48E3C30C2D736C3D05D6FD566A8 /* BeNil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2256ED78FCA069D0A67AE7996F700F /* BeNil.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		7E0C9AE6468A5DF91F0F4C7A387D725C /* BeAKindOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBDDD402C136C4C7E06650F0EB6E9CD6 /* BeAKindOf.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		8170866E2ACE0ACFBC6D90081354EC65 /* Stringers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D61A65644B128A845AB3BF3D8631CC4C /* Stringers.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
-		8A2224054E659FC4FB1E4F80AF514CA5 /* SDDropdown+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 999B08554B34984082BDF2C2962EDB50 /* SDDropdown+Model.swift */; };
+		8A2224054E659FC4FB1E4F80AF514CA5 /* SDDropdown+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 999B08554B34984082BDF2C2962EDB50 /* SDDropdown+ViewModel.swift */; };
 		8B55BD430033027AD5FF22D630DD9F62 /* DSL.m in Sources */ = {isa = PBXBuildFile; fileRef = A271F0BB61B5E4A69A22F05AE8C0E6FB /* DSL.m */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		96132E7432F8DD315A88A07C6B4F9C72 /* NMBStringify.h in Headers */ = {isa = PBXBuildFile; fileRef = AC9720E44CC5EEB092E90D118DC69352 /* NMBStringify.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		988EED125395950177DC14AF9BC87D8D /* HaveCount.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3FE3EC8226C0B8E6FC7B845B39DEDC /* HaveCount.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
@@ -251,7 +251,7 @@
 		980107C107885320335941A4471C9DBA /* BeginWith.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BeginWith.swift; path = Sources/Nimble/Matchers/BeginWith.swift; sourceTree = "<group>"; };
 		98884B98AC8059074D67FE0CD2C32438 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		98DA9221D3C3670D09A3418B64C4293F /* BeGreaterThan.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BeGreaterThan.swift; path = Sources/Nimble/Matchers/BeGreaterThan.swift; sourceTree = "<group>"; };
-		999B08554B34984082BDF2C2962EDB50 /* SDDropdown+Model.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "SDDropdown+Model.swift"; path = "SDDropdown/Classes/SDDropdown+Model.swift"; sourceTree = "<group>"; };
+		999B08554B34984082BDF2C2962EDB50 /* SDDropdown+ViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "SDDropdown+ViewModel.swift"; path = "SDDropdown/Classes/SDDropdown+ViewModel.swift"; sourceTree = "<group>"; };
 		9C307734CC6DDA96E75DB8F886E6E029 /* MatchError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MatchError.swift; path = Sources/Nimble/Matchers/MatchError.swift; sourceTree = "<group>"; };
 		9C78BF27F3A2B7B1368FE2E4317B6557 /* DSL.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DSL.swift; path = Sources/Quick/DSL/DSL.swift; sourceTree = "<group>"; };
 		9CBFA93649DC414474690ACD27048025 /* Predicate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Predicate.swift; path = Sources/Nimble/Matchers/Predicate.swift; sourceTree = "<group>"; };
@@ -455,7 +455,7 @@
 				444919B11F856D3000FE2526 /* Selectable.swift */,
 				444919AF1F856D2000FE2526 /* Configuration.swift */,
 				EA180B16AFF1B063E57B05EB4F44B7C0 /* SDDropdown.swift */,
-				999B08554B34984082BDF2C2962EDB50 /* SDDropdown+Model.swift */,
+				999B08554B34984082BDF2C2962EDB50 /* SDDropdown+ViewModel.swift */,
 				847603FF2F4496ED7726048DEAB98B61 /* Support Files */,
 			);
 			name = SDDropdown;
@@ -903,7 +903,7 @@
 				444919B71F856D5300FE2526 /* Configuration.swift in Sources */,
 				444919B61F856D4B00FE2526 /* Selectable.swift in Sources */,
 				444919B51F856D4600FE2526 /* Errors.swift in Sources */,
-				8A2224054E659FC4FB1E4F80AF514CA5 /* SDDropdown+Model.swift in Sources */,
+				8A2224054E659FC4FB1E4F80AF514CA5 /* SDDropdown+ViewModel.swift in Sources */,
 				615C8A9CAA1DD63210F4D19F123C5F1B /* SDDropdown-dummy.m in Sources */,
 				2B86CA4D42B21EDDA810011C0A45D476 /* SDDropdown.swift in Sources */,
 			);

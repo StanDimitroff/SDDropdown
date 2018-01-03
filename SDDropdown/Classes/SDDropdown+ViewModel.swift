@@ -22,10 +22,10 @@ public struct DropdownSection {
 
 extension SDDropdown {
 
-    final class Model {
+    public final class ViewModel {
 
         // MARK: - Properties
-        private var collection: Any
+        private var data: Any
         
         private var sections: [DropdownSection]         = []
         private var rows: [DropdownRow]                 = []
@@ -36,10 +36,21 @@ extension SDDropdown {
         var preSelectedData: [DropdownRow]              = []
         var selectedData: [DropdownRow]                 = []
 
-        init(_ collection: Any) {
-            self.collection = collection
+        /// ViewModel Initialization
+        ///
+        /// - Parameters:
+        ///   - data: the provided data which will be selected
+        ///   - preselectedData: previously selected data
+        public init(_ data: Any, preselectedData: [Selectable]?) {
+            self.data = data
 
-            setCollection()
+            if let preSelected = preselectedData {
+                self.preSelectedData = preSelected
+
+                selectedData.append(contentsOf: preSelected)
+            }
+
+            processData()
         }
 
         // MARK: - Internal API
@@ -81,27 +92,16 @@ extension SDDropdown {
         }
 
         // MARK: - Private API
-        private func setCollection() {
-            if let sections = collection as? [DropdownSection] {
+        private func processData() {
+            if let sections = data as? [DropdownSection] {
                 self.sections = sections
                 filteredSections = sections
-            } else if let rows = collection as? [DropdownRow] {
+            } else if let rows = data as? [DropdownRow] {
                 self.rows = rows
                 filteredRows = rows
             } else {
                 fatalError(Errors.unsupportedType, file: #file, line: #line)
             }
-        }
-
-        /// Append previously selected data
-        ///
-        /// - Parameter data: the data which will be added
-        func addPreselectedData(_ data: [Selectable]?) {
-            guard let preSelected = data else { return }
-
-            preSelectedData = preSelected
-
-            selectedData.append(contentsOf: preSelected)
         }
 
         /// Filter by term

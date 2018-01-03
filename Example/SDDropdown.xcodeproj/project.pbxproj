@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		444919A31F856A5500FE2526 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 444919A21F856A5500FE2526 /* AppDelegate.swift */; };
+		44132F711F88E61500D6B6A9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44132F701F88E61400D6B6A9 /* AppDelegate.swift */; };
 		444919BA1F856EB000FE2526 /* CustomCellNib.xib in Resources */ = {isa = PBXBuildFile; fileRef = 444919B91F856EB000FE2526 /* CustomCellNib.xib */; };
 		444919BC1F856F1500FE2526 /* CustomCellNib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 444919BB1F856F1500FE2526 /* CustomCellNib.swift */; };
 		446922931E8965CE00EB4829 /* CustomCellClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 446922921E8965CE00EB4829 /* CustomCellClass.swift */; };
@@ -34,7 +34,7 @@
 /* Begin PBXFileReference section */
 		089038C06225B19A83DCF4BC /* Pods_SDDropdown_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDDropdown_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AAE69D5503B8D9229041404 /* Pods-SDDropdown_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDDropdown_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-SDDropdown_Example/Pods-SDDropdown_Example.release.xcconfig"; sourceTree = "<group>"; };
-		444919A21F856A5500FE2526 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ../../../AppDelegate.swift; sourceTree = "<group>"; };
+		44132F701F88E61400D6B6A9 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		444919B91F856EB000FE2526 /* CustomCellNib.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomCellNib.xib; sourceTree = "<group>"; };
 		444919BB1F856F1500FE2526 /* CustomCellNib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellNib.swift; sourceTree = "<group>"; };
 		446922921E8965CE00EB4829 /* CustomCellClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCellClass.swift; sourceTree = "<group>"; };
@@ -120,7 +120,7 @@
 		607FACD21AFB9204008FA782 /* Example for SDDropdown */ = {
 			isa = PBXGroup;
 			children = (
-				444919A21F856A5500FE2526 /* AppDelegate.swift */,
+				44132F701F88E61400D6B6A9 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				44B44A3F1E9CBC9B00839264 /* User.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
@@ -398,10 +398,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				444919A31F856A5500FE2526 /* AppDelegate.swift in Sources */,
 				444919BC1F856F1500FE2526 /* CustomCellNib.swift in Sources */,
 				44B44A401E9CBC9B00839264 /* User.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				44132F711F88E61500D6B6A9 /* AppDelegate.swift in Sources */,
 				446922931E8965CE00EB4829 /* CustomCellClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

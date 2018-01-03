@@ -24,9 +24,9 @@ public final class SDDropdown: UIView {
     
     private var kbFrame: CGRect = .zero
 
-    private(set) var viewModel: Model!
-    private(set) var config: Configuration
-    private(set) var tapGesture: UITapGestureRecognizer?
+    private(set) var viewModel: ViewModel!
+    private(set) var config: Configuration = Configuration.defaultConfig
+    private(set) var tapGesture: UITapGestureRecognizer!
 
     fileprivate var tableView: UITableView = UITableView()
     
@@ -34,49 +34,20 @@ public final class SDDropdown: UIView {
     var targetView: UIView
     var selectionIndexPath: IndexPath?
 
-    public var data: Any! {
-        didSet {
-            viewModel = Model(data)
-        }
-    }
-
-    public var preselectedData: [Selectable]? {
-        didSet {
-            viewModel.addPreselectedData(preselectedData)
-        }
-    }
-
     // MARK: - Event handlers
     public var configureCell: CellConfiguration?
     public var onSelect: SingleSelection?
     public var onMultiSelect: MultipleSelection?
-
-//    fileprivate var rows: [Selectable] = [] {
-//        didSet {
-//            rows = rows.sorted {
-//                (s1, s2) -> Bool in return s1.key.localizedStandardCompare(s2.key) == .orderedAscending
-//            }
-//
-//            filteredRows = rows
-//        }
-//    }
-//
-
+    
 
     // MARK: - Init
-    public init(config: Configuration? = nil) {
-
-        if let config = config {
-            self.config = config
-        } else {
-            self.config = Configuration.defaultConfig
-        }
+    public init() {
 
         self.presenter          = self.config.presenter
         self.targetView         = self.config.anchorView
         self.selectionIndexPath = self.config.selectionIndexPath
 
-        let viewFrame: CGRect = self.presenter.view.frame
+        let viewFrame: CGRect = presenter.view.frame
         super.init(frame: viewFrame)
 
         addKeyboardObservers()
@@ -85,6 +56,47 @@ public final class SDDropdown: UIView {
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    public func configure(
+        presenter: UIViewController? = nil,
+        targetView: UIView? = nil,
+        multiselect: Bool? = nil,
+        searchField: Bool? = nil,
+        rowHeight: CGFloat? = nil,
+        dimColor: UIColor? = nil,
+        cellNib: UINib? = nil,
+        cellClass: AnyClass? = nil,
+        selectionIndexPath: IndexPath? = nil
+        ) -> SDDropdown {
+
+        config = Configuration(
+            presenter: presenter,
+            targetView: targetView,
+            multiselect: multiselect,
+            searchField: searchField,
+            rowHeight: rowHeight,
+            dimColor: dimColor,
+            cellNib: cellNib,
+            cellClass: cellClass,
+            selectionIndexPath: selectionIndexPath
+        )
+
+        return self
+    }
+
+    public func addData(_ data: Any, selected: [Selectable]? = nil) -> SDDropdown {
+        viewModel = ViewModel(data, preselectedData: selected)
+
+        return self
+    }
+
+    public func configureCell(config: @escaping CellConfiguration) -> SDDropdown {
+        //let ip = IndexPath(row: 0, section: 0)
+         //let selected = viewModel.rowAtIndexPath(indexPath: ip)
+        //select(selected, ip, ip)
+
+        return self
     }
 
     // MARK: - Private API
@@ -323,7 +335,7 @@ public final class SDDropdown: UIView {
         onMultiSelect?(viewModel.selectedData, selectionIndexPath)
     }
 
-    fileprivate func setupOverlay() {
+    private func setupOverlay() {
         overlayView.frame = self.frame
         overlayView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -365,32 +377,32 @@ public final class SDDropdown: UIView {
             views: ["overlayView": overlayView]))
 
         tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismiss))
-        overlayView.addGestureRecognizer(tapGesture!)
+        overlayView.addGestureRecognizer(tapGesture)
 
         setTableContainerView()
     }
 
-    fileprivate func removeOverlay() {
-        overlayView.removeGestureRecognizer(tapGesture!)
+    private func removeOverlay() {
+        overlayView.removeGestureRecognizer(tapGesture)
         overlayView.removeFromSuperview()
     }
 
-    fileprivate func keyboardFrame(_ notification: Notification) -> CGRect {
+    private func keyboardFrame(_ notification: Notification) -> CGRect {
         let userInfo = notification.userInfo!
 
         return (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
     }
 
-    fileprivate func hideKeyboard() {
+    private func hideKeyboard() {
         presenter.view.endEditing(true)
     }
 
-    fileprivate func reloadTable() {
+    private func reloadTable() {
         tableView.reloadData()
     }
 
     @objc
-    fileprivate func dismiss() {
+    private func dismiss() {
         UIView.animate(withDuration: 0.35, animations: {
             //self.tableContainerView.frame.origin.y = self.targetView.frame.maxY + 10
             self.tableContainerView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
@@ -404,7 +416,7 @@ public final class SDDropdown: UIView {
     }
 
     /// Show dropdown with animation
-    public func show() {
+    public func show() -> SDDropdown {
         setupOverlay()
 
         UIView.animate(withDuration: 0.35, animations: {
@@ -417,6 +429,8 @@ public final class SDDropdown: UIView {
                 self.tableContainerView.center = self.center
             }
         })
+
+        return self
     }
 
     /// Hide dropdown

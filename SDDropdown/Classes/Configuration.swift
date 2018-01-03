@@ -8,77 +8,81 @@
 
 import UIKit
 
-public final class Configuration {
+extension SDDropdown {
 
-    // MARK: - Properties
-    let cellReuseIdentifier: String = "SDDropdownCell"
+    public final class Configuration {
 
-    private let targetView: UIView?
-    let dimColor: UIColor
-    let presenter: UIViewController!
+        // MARK: - Properties
+        let cellReuseIdentifier: String = "SDDropdownCell"
 
-    let multiselect: Bool
-    let rowHeight: CGFloat
-    let searchField: Bool
-    let cellNib: UINib?
-    let cellClass: AnyClass?
-    let selectionIndexPath: IndexPath?
+        private let targetView: UIView?
+        let dimColor: UIColor
+        let presenter: UIViewController!
 
-    var anchorView: UIView {
-        return targetView ?? presenter.view
-    }
+        let multiselect: Bool
+        let rowHeight: CGFloat
+        let searchField: Bool
+        let cellNib: UINib?
+        let cellClass: AnyClass?
+        let selectionIndexPath: IndexPath?
 
-    /// Config Initializer
-    ///
-    /// - Parameters:
-    ///   - presenter: UIViewController instance responsible for presenting the view
-    ///   - targetView: targetView description
-    ///   - multiselect: multiselect description
-    ///   - searchField: searchField description
-    ///   - rowHeight: rowHeight description
-    ///   - dimColor: dimColor description
-    ///   - cellNib: the provided UINib
-    ///   - cellClass: the provided UITableViewCell class
-    ///   - selectionIndexPath: the IndexPath which the dropdown is presented from
-    public init(
-        presenter: UIViewController? = nil,
-        targetView: UIView? = nil,
-        multiselect: Bool? = nil,
-        searchField: Bool? = nil,
-        rowHeight: CGFloat? = nil,
-        dimColor: UIColor? = nil,
-        cellNib: UINib? = nil,
-        cellClass: AnyClass? = nil,
-        selectionIndexPath: IndexPath? = nil) {
+        var anchorView: UIView {
+            return targetView ?? presenter.view
+        }
 
-        self.presenter   = presenter ?? Defaults.presenter
-        self.targetView  = targetView
-        self.multiselect = multiselect ?? Defaults.hasMultiselect
-        self.searchField = searchField ?? Defaults.hasSearchField
-        self.rowHeight   = rowHeight ?? Defaults.rowHeight
-        self.dimColor    = dimColor ?? Defaults.dimColor
-        self.cellNib     = cellNib ?? Defaults.cellNib
-        self.cellClass    = cellClass ?? Defaults.cellClass
-        self.selectionIndexPath = selectionIndexPath
-    }
+        /// Config Initializer
+        ///
+        /// - Parameters:
+        ///   - presenter: UIViewController instance responsible for presenting the view
+        ///   - targetView: targetView description
+        ///   - multiselect: multiselect description
+        ///   - searchField: searchField description
+        ///   - rowHeight: rowHeight description
+        ///   - dimColor: dimColor description
+        ///   - cellNib: the provided UINib
+        ///   - cellClass: the provided UITableViewCell class
+        ///   - selectionIndexPath: the IndexPath which the dropdown is presented from
+        public init(
+            presenter: UIViewController?,
+            targetView: UIView?,
+            multiselect: Bool?,
+            searchField: Bool?,
+            rowHeight: CGFloat?,
+            dimColor: UIColor?,
+            cellNib: UINib?,
+            cellClass: AnyClass?,
+            selectionIndexPath: IndexPath?
+            ) {
 
-    /// Default options configuration
-    static var defaultConfig: Configuration {
+            self.presenter   = presenter ?? Defaults.presenter
+            self.targetView  = targetView
+            self.multiselect = multiselect ?? Defaults.hasMultiselect
+            self.searchField = searchField ?? Defaults.hasSearchField
+            self.rowHeight   = rowHeight ?? Defaults.rowHeight
+            self.dimColor    = dimColor ?? Defaults.dimColor
+            self.cellNib     = cellNib ?? Defaults.cellNib
+            self.cellClass    = cellClass ?? Defaults.cellClass
+            self.selectionIndexPath = selectionIndexPath
+        }
 
-        return Configuration(
-            presenter: Defaults.presenter,
-            targetView: nil,
-            multiselect: Defaults.hasMultiselect,
-            searchField: Defaults.hasMultiselect,
-            rowHeight: Defaults.rowHeight,
-            dimColor: Defaults.dimColor,
-            cellNib: Defaults.cellNib,
-            cellClass: Defaults.cellClass,
-            selectionIndexPath: nil)
+        /// Default options configuration
+        static var defaultConfig: Configuration {
+
+            return Configuration(
+                presenter: Defaults.presenter,
+                targetView: nil,
+                multiselect: Defaults.hasMultiselect,
+                searchField: Defaults.hasMultiselect,
+                rowHeight: Defaults.rowHeight,
+                dimColor: Defaults.dimColor,
+                cellNib: Defaults.cellNib,
+                cellClass: Defaults.cellClass,
+                selectionIndexPath: nil)
+        }
     }
 }
 
-extension Configuration {
+extension SDDropdown.Configuration {
     enum Defaults {
         static let presenter            = UIApplication.shared.keyWindow?.rootViewController!
         static let hasMultiselect: Bool = false
